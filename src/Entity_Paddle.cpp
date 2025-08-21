@@ -34,32 +34,35 @@ void Entity_Paddle::initialize(float paddleWidth, float paddleHeight, float padd
     
 }
 
-void Entity_Paddle::moveLeft() {
-    // Set velocity to move left
-    velocity.x = -speed;
-}
-
-void Entity_Paddle::moveRight() {
-    // Set velocity to move right
-    velocity.x = speed;
+void Entity_Paddle::update(float dt) {
+    
+    // paddle movement
+    const Uint8 *state = SDL_GetKeyboardState(nullptr);
+    float dir = 0.0f;
+    if (state[SDL_SCANCODE_LEFT]) {
+        dir = -1.0f; // Move left
+        move(dir, dt);
+    } else if (state[SDL_SCANCODE_RIGHT]) {
+        dir = 1.0f; // Move right
+        move(dir, dt);
+    } else {
+        // No movmement
+        if (velocity.x != 0.0f) {
+            move(0.0f, dt);
+        }
+    }
+    
 }
 
 void Entity_Paddle::move(float dir, float deltaTime) {
+    // Update paddle position based on direction and speed
     position.x += dir * speed * deltaTime;
-
-    // Clamp
-    if (position.x < bounds.minX)
+    
+    // Clamp paddle position to bounds
+    if (position.x < bounds.minX) {
         position.x = bounds.minX;
-    if (position.x + size.x > bounds.maxX)
+    } else if (position.x + size.x > bounds.maxX) {
         position.x = bounds.maxX - size.x;
-}
-
-void Entity_Paddle::update(float dt) {
-    // input-driven movement is handled via Input class; velocity.x set there
-    position.x += velocity.x * dt;
-    // clamp to play area
-    if (position.x < bounds.minX) position.x = bounds.minX;
-    if (position.x + size.x > bounds.maxX) position.x = bounds.maxX - size.x;
-    // reset velocity for next frame
-    velocity = {0.0f, 0.0f};
+    }
+    
 }

@@ -43,6 +43,7 @@ private:
     int width = 800;  // Default width
     int height = 600; // Default height
     //AssetManager assetManager;
+    float FPS = 60.0f; // Frames per second
 };
 
 #endif //BREAKOUT_GAME_HPP

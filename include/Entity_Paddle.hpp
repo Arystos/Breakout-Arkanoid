@@ -11,15 +11,14 @@
 
 class Entity_Paddle : public Entity {
 public:
-    float speed {1000.0f}; // pixels per second
+    float speed {500.0f}; // speed of paddle movement
+    
     float maxWidth;
     bool sticky{false};
     void update(float dt) override;
     void render(SDL_Renderer* r) override;
     void initialize (float paddleWidth, float paddleHeight, float paddleSpeed);
-
-    void moveLeft();
-    void moveRight();
+    
     void move (float dir, float deltaTime);
 
 private:

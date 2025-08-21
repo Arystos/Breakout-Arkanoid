@@ -7,13 +7,13 @@
 #include "State_Pause.hpp"
 
 void State_Play::handleInput(Game &game, const SDL_Event &event) {
+    // Handle input events for the play state
     if (event.type == SDL_KEYDOWN)  {
         switch (event.key.keysym.scancode) {
-            case SDL_SCANCODE_ESCAPE:
-                game.pushState(std::make_unique<State_Pause>());
+            case SDL_SCANCODE_LEFT: 
+                game.paddle.move(-1.0f, getDeltaTime()); // Move paddle left
                 break;
-            case SDL_SCANCODE_LEFT:  game.paddle.moveLeft(); break;
-            case SDL_SCANCODE_RIGHT: game.paddle.moveRight(); break;
+                // TODO: Improove paddle smothness
             default:
                 break;
         }
@@ -22,10 +22,10 @@ void State_Play::handleInput(Game &game, const SDL_Event &event) {
 
 void State_Play::update(Game &game, float dt) {
     (void)game; (void)dt; // Avoid unused parameter warnings
-    // update world; if the ball is lost or the level is completed, change state
+    deltaTime = dt;
     
-    // For now, just update the paddle
-    game.paddle.update(dt);
+    // Update paddle position based on input
+    if (game.paddle.active) game.paddle.update(dt);
 }
 
 void State_Play::render(Game &game) {

@@ -49,10 +49,10 @@ bool Game::init(const char *title, bool fullscreen) {
 void Game::run() {
     std::cout << "Game is running..." << std::endl;
     
-    const float targetFrameTime = 1.0f / 60.0f;
+    const float targetFrameTime = 1.0f / FPS;
     Uint64 now = SDL_GetPerformanceCounter();
     
-    while (running) { // TODO: Implement !states. empty check
+    while (running) {
         Uint64 frameStart = SDL_GetPerformanceCounter();
         float dt = (frameStart - now) / static_cast<float>(SDL_GetPerformanceFrequency());
         now = frameStart;
@@ -66,7 +66,7 @@ void Game::run() {
         }
         //DEPRECATED: states.back()->handleInput(*this, event);
         
-        // Update
+        // Update (if any state is active)
         if (!states.empty()) states.back()->update(*this, dt);
         
         // render

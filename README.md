@@ -68,3 +68,11 @@ breakout/
 - Collision detection between ball, paddle, bricks, and power-ups.
 - Game states for main menu, playing, paused, and game over.
 - Asset management for textures, sounds, and fonts.
+
+## Inputs Controls
+- **Paddle Movement**: Use the left and right arrow keys to move the paddle. 
+`Note: The paddle movement is the only one to get the handling input in the update
+otherwise the game will not be responsive enough`
+- **Pause Game**: Press the `ESC` key to pause or resume the game.
+- **Restart Game**: Press the `R` key to restart the game from the main
+- **Exit Game**: Press the `Q` key to quit the game.
