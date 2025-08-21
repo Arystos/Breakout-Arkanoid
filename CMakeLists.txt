@@ -6,12 +6,19 @@ set(BREAKOUT_SRC
         src/main.cpp
         src/Game.cpp
         src/State_MainMenu.cpp
-        src/StatePlay.cpp
-        include/StatePlay.hpp
+        src/State_Play.cpp
         src/State_Pause.cpp
-        include/State_Pause.hpp
-        src/StateGameOver.cpp
-        include/StateGameOver.hpp
+        src/State_GameOver.cpp
+        src/Entity_Paddle.cpp
+        include/Entity_Paddle.hpp
+        src/Entity_Ball.cpp
+        include/Entity_Ball.hpp
+        src/EntityBrick.cpp
+        include/Entity_Brick.hpp
+        src/Entity_PowerUp.cpp
+        include/Entity_PowerUp.hpp
+        src/Physics.cpp
+        include/Physics.hpp
 )
 
 add_executable(breakout ${BREAKOUT_SRC})
@@ -19,5 +26,8 @@ add_executable(breakout ${BREAKOUT_SRC})
 find_package(SDL2 REQUIRED)
 # Link SDL2 to the executable
 
+find_package(glm CONFIG REQUIRED)
+
 target_include_directories(breakout PRIVATE include)
 target_link_libraries(breakout PRIVATE SDL2::SDL2)
+target_link_libraries(breakout PRIVATE glm::glm-header-only)

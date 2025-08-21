@@ -15,7 +15,6 @@ breakout/
 ├─ include/
 │   ├─ Game.hpp
 │   ├─ State.hpp, MainMenuState.hpp, PlayState.hpp, PauseState.hpp, GameOverState.hpp
-│   ├─ Renderer.hpp, Window.hpp
 │   ├─ Entity.hpp, Paddle.hpp, Ball.hpp, Brick.hpp, PowerUp.hpp
 │   ├─ Physics.hpp
 │   ├─ AssetManager.hpp
@@ -25,7 +24,6 @@ breakout/
 │   ├─ main.cpp
 │   ├─ Game.cpp
 │   ├─ State classes (MainMenuState.cpp, PlayState.cpp, etc.)
-│   ├─ Renderer.cpp, Window.cpp
 │   ├─ Entity classes (Paddle.cpp, Ball.cpp, Brick.cpp, PowerUp.cpp)
 │   ├─ Physics.cpp
 │   ├─ AssetManager.cpp
