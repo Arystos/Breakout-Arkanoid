@@ -3,15 +3,14 @@
 //
 
 #include "StatePlay.hpp"
-#include "State_MainMenu.hpp"
-#include "State_Pause.hpp"
+#include <iostream>
 
 void State_Play::handleInput(Game &game, const SDL_Event &event) {
     // Handle input events for the play state
     if (event.type == SDL_KEYDOWN)  {
         switch (event.key.keysym.scancode) {
             case SDL_SCANCODE_LEFT: 
-                game.paddle.move(-1.0f, getDeltaTime()); // Move paddle left
+                paddle.move(-1.0f, getDeltaTime()); // Move paddle left
                 break;
                 // TODO: Improove paddle smothness
             default:
@@ -25,7 +24,7 @@ void State_Play::update(Game &game, float dt) {
     deltaTime = dt;
     
     // Update paddle position based on input
-    if (game.paddle.active) game.paddle.update(dt);
+    if (paddle.active) paddle.update(dt);
 }
 
 void State_Play::render(Game &game) {
@@ -36,7 +35,7 @@ void State_Play::render(Game &game) {
     SDL_RenderDrawRect(r, &box);
     
     // render paddle
-    game.paddle.render(r);
+    paddle.render(r);
 }
 
 void State_Play::onEnter(Game &game) {
@@ -45,11 +44,13 @@ void State_Play::onEnter(Game &game) {
     State::onEnter(game);
     
     // Place paddle near the bottom of the screen
-    game.paddle.position = { static_cast<float>(game.getWidth() / 2 - game.paddle.size.x / 2), 
-                             static_cast<float>(game.getHeight() - game.paddle.size.y - 100) };
-    game.paddle.size = { 100.0f, 20.0f };
-    game.paddle.velocity = { 0.0f, 0.0f };
-    game.paddle.active = true;
+    paddle.position = {
+            (game.getWidth() * 0.5f - paddle.size.x * 0.5f),
+            (game.getHeight() - paddle.size.y - 100.0f)
+    };
+    paddle.size = { 100.0f, 20.0f };
+    paddle.velocity = { 0.0f, 0.0f };
+    paddle.active = true;
 }
 
 void State_Play::onExit(Game &game) {

@@ -34,7 +34,6 @@ public:
     bool isRunning() const { return running; }
     //AssetManager& assets();
     
-    Entity_Paddle paddle;
 private:
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;

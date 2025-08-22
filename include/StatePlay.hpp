@@ -23,6 +23,8 @@ private:
     int score = 0; // Player's score
     float deltaTime = 0.0f; // Time since last update, used for movement calculations
     // TODO: Add paddle, ball, bricks
+
+    Entity_Paddle paddle;
 };
 
 

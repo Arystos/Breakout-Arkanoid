@@ -34,7 +34,11 @@ bool Game::init(const char *title, bool fullscreen) {
         return false;
     }
 
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    renderer = SDL_CreateRenderer(
+            window, -1, SDL_RENDERER_ACCELERATED // Use hardware acceleration
+             | SDL_RENDERER_PRESENTVSYNC // Enable VSync
+             | SDL_RENDERER_TARGETTEXTURE // Allow rendering to texture
+            ); 
     if (!renderer) {
         SDL_Log("Could not create renderer: %s", SDL_GetError());
         SDL_DestroyWindow(window);
@@ -42,7 +46,7 @@ bool Game::init(const char *title, bool fullscreen) {
     }
 
     running = true;
-    return true;
+    return running;
 }
 
 // Game.cpp (simplified run loop)
