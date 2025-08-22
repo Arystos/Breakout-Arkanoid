@@ -1,5 +1,6 @@
 #pragma once
 #include "State.hpp"
+#include "Game.hpp"
 #include <vector>
 #include <string>
 #include <iostream>
@@ -11,7 +12,9 @@ public:
     void render(Game& game) override;
     void onEnter(Game& game) override {
         std::cout << "Main Menu State" << std::endl;
+        game.getCurrentState();
     }
+    const char* getName() const override { return "MainMenu"; }
 private:
     int selected{0};
     std::vector<std::string> items{"Start", "Quit"};

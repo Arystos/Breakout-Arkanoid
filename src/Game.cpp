@@ -1,8 +1,5 @@
-//
-// Created by Aristide Sessa on 08/08/25.
-//
-
 #include <Game.hpp>
+#include "State.hpp"
 #include <iostream>
 
 Game::Game() {}
@@ -82,6 +79,10 @@ void Game::run() {
         // Frame cap
         float frameTime = (SDL_GetPerformanceCounter() - frameStart) / static_cast<float>(SDL_GetPerformanceFrequency());
         if (frameTime < targetFrameTime) SDL_Delay(static_cast<Uint32>((targetFrameTime - frameTime) * 1000.0f));
+        
+        // Show current fps as text on top left corner with SDL text
+        
+        
     }
     
 }
@@ -112,4 +113,10 @@ void Game::popState() {
     }
     if (states.empty()) quit(); // If no states left, quit the game 
 }
+
+State *Game::getCurrentState() {
+    if (states.empty()) return nullptr;
+    return states.back().get();
+}
+
 #pragma endregion

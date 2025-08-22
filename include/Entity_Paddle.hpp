@@ -11,21 +11,20 @@
 
 class Entity_Paddle : public Entity {
 public:
-    float speed {500.0f}; // speed of paddle movement
-    
-    float maxWidth;
+    Entity_Paddle();
+    float maxWidth{};
     bool sticky{false};
+    
     void update(float dt) override;
     void render(SDL_Renderer* r) override;
-    void initialize (float paddleWidth, float paddleHeight, float paddleSpeed);
-    
     void move (float dir, float deltaTime);
-
+    
 private:
     struct {
         float minX{0.0f};
         float maxX{800.0f}; // TODO: set to actual play area width
     } bounds;
+    float speed {500.0f}; // default speed (pixels per second)
 };
 
 

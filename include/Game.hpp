@@ -4,8 +4,8 @@
 #include <memory>
 #include <vector>
 #include <SDL.h>
-#include "State.hpp"
-#include "Entity_Paddle.hpp"
+#include <iostream>
+
 
 class State;
 
@@ -19,8 +19,8 @@ public:
     void run(); // Main game loop
     void quit(); // Clean up and exit the game
     
-    int getWidth() const { return width; }
-    int getHeight() const { return height; }
+    int Width() const { return width; }
+    int Height() const { return height; }
 #pragma endregion
 
 #pragma region State Management
@@ -33,7 +33,12 @@ public:
     SDL_Window* getWindow() const { return window; }
     bool isRunning() const { return running; }
     //AssetManager& assets();
-    
+
+    // Singleton access
+    static Game &getInstance() { static Game instance; return instance; }
+    // Get the current state
+    State* getCurrentState();
+
 private:
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;

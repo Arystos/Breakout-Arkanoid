@@ -16,6 +16,7 @@ public:
     void onEnter(Game& game) override {
         std::cout << "Pause State" << std::endl;
     }
+    const char* getName() const override { return "Pause"; }
 };
 
 #endif //BREAKOUT_STATE_PAUSE_HPP

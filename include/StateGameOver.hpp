@@ -18,6 +18,7 @@ public:
     void onEnter(Game& game) override {
         std::cout << "Game Over State" << std::endl;
     }
+    const char* getName() const override { return "GameOver"; }
 private:
     int score = 0; // Player's score
 };

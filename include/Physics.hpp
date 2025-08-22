@@ -14,14 +14,17 @@
 #include "glm/vec2.hpp"
 
 class Physics {
+public:
     // Check collision between a circle and an AABB
-    bool circleVsAABB(const glm::vec2& center, float radius, const SDL_FRect& box, glm::vec2& hitNormal);
+    static bool circleVsAABB(const glm::vec2& center, float radius, const SDL_FRect& box, glm::vec2& hitNormal);
 
     // Check collision between two AABBs
-    bool aabbVsAABB(const SDL_FRect& a, const SDL_FRect& b);
+    static bool aabbVsAABB(const SDL_FRect& a, const SDL_FRect& b);
 
     // Reflect the ball based on the collision normal
-    void reflectBall(Entity_Ball& ball, const glm::vec2& normal);
+    static void reflectBall(Entity_Ball& ball, const glm::vec2& normal);
+
+    static bool Collision(Entity *e1, Entity *e2);
 };
 
 

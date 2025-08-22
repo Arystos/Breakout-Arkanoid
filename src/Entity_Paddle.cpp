@@ -3,6 +3,20 @@
 //
 
 #include "Entity_Paddle.hpp"
+#include "Game.hpp"
+
+// constructor
+Entity_Paddle::Entity_Paddle() {
+    Game& game = Game::getInstance();
+    position = {
+            (game.Width() * 0.5f - size.x * 0.5f),
+            (game.Height() - size.y - 100.0f)
+    };
+    size = {100.0f, 20.0f};
+    speed = 300.0f; // default speed
+    active = false;
+}
+
 
 void Entity::render(SDL_Renderer *r) {
     // Print debug information
@@ -28,10 +42,6 @@ void Entity_Paddle::render(SDL_Renderer *r) {
         SDL_Rect rect{(int)position.x, (int)position.y, (int)size.x, (int)size.y};
         SDL_RenderCopy(r, texture, nullptr, &rect);
     }
-}
-
-void Entity_Paddle::initialize(float paddleWidth, float paddleHeight, float paddleSpeed) {
-    
 }
 
 void Entity_Paddle::update(float dt) {

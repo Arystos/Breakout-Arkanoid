@@ -34,7 +34,7 @@ void State_GameOver::render(Game &game) {
     SDL_Renderer* r = game.getRenderer();
     // banner
     SDL_SetRenderDrawColor(r, 180, 50, 50, 255);
-    SDL_Rect banner{ game.getWidth()/2 - 180, game.getHeight()/2 - 40, 360, 80 };
+    SDL_Rect banner{game.Width() / 2 - 180, game.Height() / 2 - 40, 360, 80 };
     SDL_RenderFillRect(r, &banner);
     // (Text later via SDL_ttf; for now just the block)
 }

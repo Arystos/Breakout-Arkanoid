@@ -22,7 +22,7 @@ public:
     float fallSpeed{150.0f};
     void update(float dt) override {
         position.y += fallSpeed * dt;
-        if (position.y > Game().getHeight()) {
+        if (position.y > Game().Height()) {
             active = false; // deactivate if it falls off screen
         }
     }

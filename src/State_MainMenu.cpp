@@ -31,7 +31,7 @@ void State_MainMenu::render(Game& game) {
     // Minimal placeholder rendering (rects as text bars)
     SDL_Renderer* renderer = game.getRenderer();
             
-    const int w = game.getWidth(), h = game.getHeight();
+    const int w = game.Width(), h = game.Height();
 
     // Title bar
     SDL_Rect title{ w/2 - 200, 80, 400, 60 };
