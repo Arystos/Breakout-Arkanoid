@@ -33,10 +33,13 @@ add_custom_command(TARGET breakout POST_BUILD
 )
 
 find_package(SDL2 REQUIRED)
-# Link SDL2 to the executable
-
+find_package(SDL2_ttf REQUIRED)   # <-- aggiunto
 find_package(glm CONFIG REQUIRED)
 
 target_include_directories(breakout PRIVATE include)
-target_link_libraries(breakout PRIVATE SDL2::SDL2)
-target_link_libraries(breakout PRIVATE glm::glm-header-only)
+
+target_link_libraries(breakout PRIVATE
+        SDL2::SDL2
+        SDL2_ttf::SDL2_ttf   # <-- aggiunto
+        glm::glm-header-only
+)

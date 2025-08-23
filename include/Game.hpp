@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include <SDL.h>
+#include <SDL_ttf.h>
 #include <iostream>
 
 
