@@ -1,6 +1,7 @@
 #pragma once
 #include "State.hpp"
 #include "Game.hpp"
+#include "UI.hpp"
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <vector>
@@ -31,4 +32,13 @@ private:
     // helpers
     SDL_Texture* makeText(SDL_Renderer* r, TTF_Font* f, const std::string& s, SDL_Color col) const;
     void destroyLabels(SDL_Renderer* r);
+    
+    // UI
+    UI::Label title_;
+    UI::Button buttonPlay;
+    UI::Button buttonQuit;
+
+    // Cache colors
+    SDL_Color titleColor_{230, 230, 240, 255};
+    SDL_Color textColor{240, 240, 240, 255};
 };

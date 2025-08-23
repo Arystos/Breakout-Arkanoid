@@ -21,6 +21,8 @@ set(BREAKOUT_SRC
         include/Entity_PowerUp.hpp
         src/Physics.cpp
         include/Physics.hpp
+        src/UI.cpp
+        include/UI.hpp
 )
 
 add_executable(breakout ${BREAKOUT_SRC})

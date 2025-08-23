@@ -126,9 +126,8 @@ void Entity_Ball::onCollision(Entity &entity) {
             velocity = glm::normalize(velocity) * maxSpeed;
         }
 
-        // reposition the ball above the paddle
-        position.y = paddle->position.y - 2 * radius;
         // Deprecated
+        //position.y = paddle->position.y - 2 * radius; // reposition above paddle
         //position.x += velocity.x * 0.016f; // small offset to avoid sticking
     }
 #pragma endregion

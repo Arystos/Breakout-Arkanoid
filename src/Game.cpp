@@ -1,13 +1,15 @@
 #include <Game.hpp>
-#include "State.hpp"
 #include <iostream>
+
+static Uint64 nowPerf() { return SDL_GetPerformanceCounter(); } // current time in ticks
 
 Game::Game() {}
 
 Game::~Game() {
     states.clear(); // Clear all states
-    if (renderer) SDL_DestroyRenderer(renderer);
-    if (window) SDL_DestroyWindow(window);
+    if (uiFont_) TTF_CloseFont(uiFont_); uiFont_ = nullptr;
+    if (renderer) SDL_DestroyRenderer(renderer); renderer = nullptr;
+    if (window) SDL_DestroyWindow(window); window = nullptr;
     TTF_Quit();
     SDL_Quit();
 }
@@ -25,7 +27,6 @@ bool Game::init(const char *title, bool fullscreen) {
         SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
         return false;
     }
-
     if (TTF_Init() == -1) {
         SDL_Log("TTF_Init failed: %s", TTF_GetError());
         return false;
@@ -47,6 +48,10 @@ bool Game::init(const char *title, bool fullscreen) {
         SDL_DestroyWindow(window);
         return false;
     }
+
+    // Load a default font for UI
+    uiFont_ = TTF_OpenFont("assets/fonts/Roboto-Regular.ttf", 28);
+    if (!uiFont_) { SDL_Log("TTF_OpenFont: %s", TTF_GetError()); return false; }
 
     running = true;
     return running;

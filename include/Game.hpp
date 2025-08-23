@@ -6,9 +6,10 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <iostream>
+#include "State.hpp"
 
 
-class State;
+//class State; // Forward declaration
 
 class Game {
 public:
@@ -37,7 +38,9 @@ public:
     SDL_Renderer* getRenderer() const { return renderer; }
     SDL_Window* getWindow() const { return window; }
     bool isRunning() const { return running; }
+    
     //AssetManager& assets();
+    TTF_Font* uiFont() const { return uiFont_; }
     
     int BallCount() const { return ballCount; }
     int setBallCount(int count) { ballCount = count; return ballCount; }
@@ -47,6 +50,8 @@ private:
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;
     std::vector<std::unique_ptr<State>> states = {};
+    TTF_Font* uiFont_ = nullptr;
+    
     bool running = false;
     int width = 800;  // Default width
     int height = 600; // Default height
