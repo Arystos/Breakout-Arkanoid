@@ -5,11 +5,13 @@
 #include "Entity_Ball.hpp"
 #include "Physics.hpp"
 #include "StatePlay.hpp"
+#include "StateGameOver.hpp"
 #include <iostream>
 
 Entity_Ball::Entity_Ball() {
     size = {radius * 2.0f, radius * 2.0f};
     velocity = {300.0f, -300.0f};
+    game.setBallCount(game.BallCount() + 1);
     active = false;
 }
 
@@ -18,8 +20,7 @@ void Entity_Ball::attachTo(Entity_Paddle &p) {
     stuckToPaddle = true;
     position.x = p.position.x + p.size.x / 2 - radius;
     position.y = p.position.y - 2 * radius;
-    // TODO: Find a better way to get current state
-    currentState = game.getCurrentState();
+    setCurrentState(game.getCurrentState());
 }
 
 void Entity_Ball::update(float dt) {
@@ -40,17 +41,21 @@ void Entity_Ball::update(float dt) {
         position.y = 0.0f;
         velocity.y = -velocity.y;
     } else if (position.y + radius * 2.0f >= game.Height()) { // Bottom border
-        // TODO: Trigger game over or life lost
-        position.y = game.Height() - radius * 2.0f;
-        velocity.y = -velocity.y;
-        // For now, just bounce back
+        game.setBallCount(game.BallCount() - 1);
+        toBeDestroyed = true; // Mark for removal
+        if (game.BallCount() <= 0) {
+            // Transition to Game Over state
+            game.changeState(std::make_unique<State_GameOver>());
+        }
+        return;
     }
     
     // TODO: Optimize collision detection
-    // Check collision with all entities in the current state
+    // check collision with all active entities in the current state
     for (Entity* entity : currentState->getEntities()) {
         if (entity != this && entity->active) {
-            if (Physics::circleVsAABB(
+            // Collision detection
+            if (entity == paddle && Physics::circleVsAABB(
                 {position.x + radius, position.y + radius}, // ball center
                 radius,
                 entity->getRect(), normal
@@ -60,23 +65,6 @@ void Entity_Ball::update(float dt) {
             }
         }
     }
-    
-    
-
-    /*
-    // Collision paddle
-    if (paddle && !stuckToPaddle) {
-        glm::vec2 center = { position.x + radius, position.y + radius };
-        glm::vec2 n;
-        SDL_FRect box = paddle->getRect();
-
-        if (Physics::circleVsAABB(center, radius, box, n)) {
-            // Trigger onCollision event
-            onCollision(*paddle);
-            Physics::reflectBall(*this, n);
-        }
-    }
-    */
 }
 
 void Entity_Ball::render(SDL_Renderer *r) {
@@ -117,5 +105,14 @@ void Entity_Ball::onCollision(Entity &other) {
     } else if (dynamic_cast<Entity_Brick*>(&other)) {
         // If ball collides with a brick
         
+    }
+}
+
+// destructor 
+Entity_Ball::~Entity_Ball() {
+    active = false;
+    if (texture) {
+        SDL_DestroyTexture(texture);
+        texture = nullptr;
     }
 }

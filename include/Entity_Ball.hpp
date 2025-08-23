@@ -14,6 +14,7 @@
 class Entity_Ball : public Entity {
 public:
     Entity_Ball();
+    ~Entity_Ball() override;
     
     bool stickyMode{false};     // when true, ball sticks to paddle on collision
     bool stuckToPaddle{false};   // ball starts stuck to paddle
@@ -24,6 +25,8 @@ public:
     
     [[nodiscard]] float Radius() const { return radius; }
     [[nodiscard]] float Size() const { return radius * 2.0f; } // diameter
+    
+    State* setCurrentState(State* s) { currentState = s; return currentState; }
     
 private:
     float radius = 10.0f; // default radius

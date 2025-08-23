@@ -13,6 +13,9 @@ class Game {
 public:
     Game();
     ~Game();
+    
+    // Singleton access
+    static Game &getInstance() { static Game instance; return instance; }
 
 #pragma region Initialization and Cleanup
     bool init(const char* title, bool fullscreen);
@@ -27,17 +30,17 @@ public:
     void changeState(std::unique_ptr<State> newState); // switch to a new state
     void pushState(std::unique_ptr<State> newState); // push a new state onto the stack (pause current)
     void popState(); // pop the current state off the stack (resume previous)
+    State* getCurrentState(); // get a pointer to the current state
 #pragma endregion
 
     SDL_Renderer* getRenderer() const { return renderer; }
     SDL_Window* getWindow() const { return window; }
     bool isRunning() const { return running; }
     //AssetManager& assets();
-
-    // Singleton access
-    static Game &getInstance() { static Game instance; return instance; }
-    // Get the current state
-    State* getCurrentState();
+    
+    int BallCount() const { return ballCount; }
+    int setBallCount(int count) { ballCount = count; return ballCount; }
+    
 
 private:
     SDL_Window* window = nullptr;
@@ -48,6 +51,7 @@ private:
     int height = 600; // Default height
     //AssetManager assetManager;
     float FPS = 60.0f; // Frames per second
+    int ballCount = 0;
 };
 
 #endif //BREAKOUT_GAME_HPP

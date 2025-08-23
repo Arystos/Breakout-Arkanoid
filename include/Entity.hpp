@@ -9,6 +9,7 @@ struct Entity {
     glm::vec2 size{0.0f, 0.0f};
     glm::vec2 velocity{0.0f, 0.0f};
     bool active{true};
+    bool toBeDestroyed{false};
     SDL_Texture *texture{nullptr}; // texture for rendering
     virtual void update(float dt) {}
     virtual void render(SDL_Renderer* r);

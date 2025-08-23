@@ -11,7 +11,7 @@
 
 class State_GameOver : public State {
 public:
-    explicit State_GameOver(int score) : score(score) {} // Constructor to initialize the score
+    //explicit State_GameOver(int score) : score(score) {} // Constructor to initialize the score
     void handleInput(Game &game, const SDL_Event &event) override;
     void update(Game &game, float dt) override;
     void render(Game &game) override;

@@ -10,6 +10,7 @@
 #include "Entity_Paddle.hpp"
 #include "Entity_Ball.hpp"
 #include "Entity_Brick.hpp"
+#include <memory>
 
 class State_Play: public State {
 public:
@@ -18,14 +19,14 @@ public:
     void render(Game &game) override;
     void onEnter(Game &game) override;
     void onExit(Game &game) override;
-    std::vector<Entity*> getEntities() override;
-    const char* getName() const override { return "Play"; }
+    [[nodiscard]] const char* getName() const override { return "Play"; }
     
     [[nodiscard]] float getDeltaTime() const { return deltaTime; }
-    Entity_Paddle& getPaddle() { return paddle; }
-    Entity_Ball& getBall() { return ball; }
-
-    std::vector<Entity *> &entities();
+    Entity_Paddle& getPaddle() { return *paddle; }
+    Entity_Ball& getBall() { return *ball; }
+    std::vector<Entity*> getEntities() override;
+    //std::vector<Entity *> &entities();
+    bool destroyEntity(Entity* e); // remove entity from the state
 
 private:
     bool paused = false; // Flag to check if the game is paused
@@ -33,8 +34,8 @@ private:
     float deltaTime = 0.0f; // Time since last update, used for movement calculations
     // TODO: Add paddle, ball, bricks
 
-    Entity_Paddle paddle;
-    Entity_Ball ball;
+    std::unique_ptr<Entity_Paddle> paddle = std::make_unique<Entity_Paddle>();
+    std::unique_ptr<Entity_Ball> ball = std::make_unique<Entity_Ball>();
     Entity_Brick brick;
 };
 

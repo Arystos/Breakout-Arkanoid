@@ -16,7 +16,7 @@ void State_Play::handleInput(Game &game, const SDL_Event &event) {
                 break;
             case SDL_SCANCODE_SPACE:
                 // Detach the ball from the paddle if it's stuck
-                if (ball.stuckToPaddle) ball.stuckToPaddle = false;
+                if (ball->stuckToPaddle) ball->stuckToPaddle = false;
                 break;
                 // TODO: Improove paddle smothness
             default:
@@ -29,10 +29,13 @@ void State_Play::update(Game &game, float dt) {
     (void)game; (void)dt; // Avoid unused parameter warnings
     deltaTime = dt;
     
-    // Update paddle position based on input
-    if (paddle.active) paddle.update(dt);
-    // Update ball position
-    if (ball.active) ball.update(dt);
+    // Update paddle, ball etc.
+    if (paddle && paddle->active) paddle->update(dt);
+    if (ball && ball->active) ball->update(dt);
+
+    // cleanup inactive entities
+    if (ball && ball->toBeDestroyed) ball.reset();
+    if (paddle && paddle->toBeDestroyed) paddle.reset();
 }
 
 void State_Play::render(Game &game) {
@@ -42,11 +45,9 @@ void State_Play::render(Game &game) {
     SDL_SetRenderDrawColor(r, 60, 60, 60, 255);
     SDL_RenderDrawRect(r, &box);
     
-    // render paddle
-    paddle.render(r);
-    
-    // render ball
-    ball.render(r);
+    // render paddle, ball, bricks etc.
+    if (paddle && paddle->active) paddle->render(r);
+    if (ball && ball->active) ball->render(r);
 }
 
 void State_Play::onEnter(Game &game) {
@@ -55,13 +56,13 @@ void State_Play::onEnter(Game &game) {
     State::onEnter(game);
     
     // acttivate the paddle
-    paddle.active = true;
+    paddle->active = true;
     
     // Place ball on top of the paddle
     //ball.radius = 10.0f;
-    ball.attachTo(paddle);
-    ball.stuckToPaddle = false;
-    ball.active = true;
+    ball->attachTo(*paddle);
+    ball->stuckToPaddle = false;
+    ball->active = true;
 }
 
 void State_Play::onExit(Game &game) {
@@ -70,8 +71,8 @@ void State_Play::onExit(Game &game) {
 
 std::vector<Entity *> State_Play::getEntities() {
     std::vector<Entity*> entities;
-    if (paddle.active) entities.push_back(&paddle);
-    if (ball.active) entities.push_back(&ball);
+    if (paddle && paddle->active) entities.push_back(paddle.get());
+    if (ball && ball->active) entities.push_back(ball.get());
 
     // TODO: Implement bricks
     /*
@@ -82,4 +83,11 @@ std::vector<Entity *> State_Play::getEntities() {
     }
     */
     return entities;
+}
+
+bool State_Play::destroyEntity(Entity *e) {
+    if (e == (paddle ? paddle.get() : nullptr)) { paddle.reset(); return true; }
+    if (e == (ball   ? ball.get()   : nullptr)) { ball.reset();   return true; }
+    SDL_Log("State_Play::destroyEntity: Entity not found.");
+    return false;
 }
