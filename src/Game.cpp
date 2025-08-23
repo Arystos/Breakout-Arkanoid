@@ -65,7 +65,6 @@ void Game::run() {
             if (event.type == SDL_QUIT) { quit(); break; }
             if (!states.empty()) states.back()->handleInput(*this, event);
         }
-        //DEPRECATED: states.back()->handleInput(*this, event);
         
         // Update (if any state is active)
         if (!states.empty()) states.back()->update(*this, dt);

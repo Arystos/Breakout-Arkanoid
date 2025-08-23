@@ -27,6 +27,7 @@ public:
     std::vector<Entity*> getEntities() override;
     //std::vector<Entity *> &entities();
     bool destroyEntity(Entity* e); // remove entity from the state
+    std::vector<Entity_Brick> loadLevel (const std::string& file, float offsetX, float offsetY); 
 
 private:
     bool paused = false; // Flag to check if the game is paused
@@ -36,7 +37,7 @@ private:
 
     std::unique_ptr<Entity_Paddle> paddle = std::make_unique<Entity_Paddle>();
     std::unique_ptr<Entity_Ball> ball = std::make_unique<Entity_Ball>();
-    Entity_Brick brick;
+    std::vector<Entity_Brick> bricks;
 };
 
 

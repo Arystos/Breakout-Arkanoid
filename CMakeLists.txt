@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.28)
 project(Breakout)
 
+set(ASSETS_DIR ${CMAKE_SOURCE_DIR}/assets)
+
 set(CMAKE_CXX_STANDARD 17)
 set(BREAKOUT_SRC
         src/main.cpp
@@ -22,6 +24,13 @@ set(BREAKOUT_SRC
 )
 
 add_executable(breakout ${BREAKOUT_SRC})
+
+add_custom_command(TARGET breakout POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:breakout>/assets
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${ASSETS_DIR}
+        $<TARGET_FILE_DIR:breakout>/assets
+)
 
 find_package(SDL2 REQUIRED)
 # Link SDL2 to the executable

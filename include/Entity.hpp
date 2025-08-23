@@ -3,6 +3,10 @@
 #include <vector>
 #include <glm/vec2.hpp>
 
+struct Color {
+    Uint8 r, g, b, a;
+};
+
 struct Entity {
     // SDL vector for position and size
     glm::vec2 position{0.0f, 0.0f};
@@ -15,6 +19,8 @@ struct Entity {
     virtual void render(SDL_Renderer* r);
     virtual void onCollision(Entity& other) {}
     virtual ~Entity() = default;
+    
+    Color color{255, 255, 255, 255}; // default white color
 
     const SDL_FRect &getRect() {
         // return SDL_FRect{position.x, position.y, size.x, size.y};
