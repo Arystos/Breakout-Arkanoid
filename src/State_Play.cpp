@@ -89,15 +89,11 @@ std::vector<Entity *> State_Play::getEntities() {
     std::vector<Entity*> entities;
     if (paddle && paddle->active) entities.push_back(paddle.get());
     if (ball && ball->active) entities.push_back(ball.get());
-
-    // TODO: Implement bricks
-    /*
     for (auto& brick : bricks) {
         if (brick.active) {
             entities.push_back(&brick);
         }
     }
-    */
     return entities;
 }
 
@@ -112,7 +108,6 @@ std::vector<Entity_Brick>
 State_Play::loadLevel(const std::string &file, float offsetX, float offsetY) {
     std::vector<Entity_Brick> bricks;
     std::ifstream in(file);
-    // print error if file cannot be opened
     if (!in) {
         SDL_Log("Failed to open level file: %s", file.c_str());
         return bricks;

@@ -7,6 +7,7 @@
 
 #include "Entity.hpp"
 #include "Entity_Paddle.hpp"
+#include "Entity_Brick.hpp"
 #include "Game.hpp"
 #include <SDL.h>
 

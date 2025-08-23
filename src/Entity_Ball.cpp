@@ -7,6 +7,7 @@
 #include "StatePlay.hpp"
 #include "StateGameOver.hpp"
 #include <iostream>
+#include <glm/trigonometric.hpp>
 
 Entity_Ball::Entity_Ball() {
     size = {radius * 2.0f, radius * 2.0f};
@@ -50,12 +51,42 @@ void Entity_Ball::update(float dt) {
         return;
     }
     
+    
+    
     // TODO: Optimize collision detection
     // check collision with all active entities in the current state
+    
     for (Entity* entity : currentState->getEntities()) {
-        if (entity != this && entity->active) {
+        if (!entity || entity == this || !entity->active) continue;
+
+        glm::vec2 n;
+        if (!Physics::circleVsAABB({position.x + radius, position.y + radius},
+                                   radius, entity->getRect(), n))
+            continue;
+
+        onCollision(*entity);
+
+        // Paddle
+        if (auto* paddle = dynamic_cast<Entity_Paddle*>(entity)) {
+            // TODO: Improove reflection based on hit position
+            // standard reflection
+            velocity = glm::reflect(velocity, n);
+            position += n * (radius * 0.5f);
+            continue;
+        }
+
+        // Brick
+        if (auto* brick = dynamic_cast<Entity_Brick*>(entity)) {
+            // riflessione standard
+            velocity = glm::reflect(velocity, n);
+            position += n * (radius * 0.5f);
+            brick->onCollision(*this);
+            continue;
+        }
+
+        /*
             // Collision detection
-            if (entity == paddle && Physics::circleVsAABB(
+            if ((entity == paddle) && Physics::circleVsAABB(
                 {position.x + radius, position.y + radius}, // ball center
                 radius,
                 entity->getRect(), normal
@@ -63,8 +94,9 @@ void Entity_Ball::update(float dt) {
             {
                 onCollision(*entity);
             }
-        }
+        */
     }
+    
 }
 
 void Entity_Ball::render(SDL_Renderer *r) {
@@ -97,15 +129,29 @@ SDL_Texture *Entity_Ball::MakeCircleTexture(SDL_Renderer *r, int diameter) {
 }
 
 void Entity_Ball::onCollision(Entity &other) {
+    
+    
+    
+    /*
     // If ball collides with paddle
     if (dynamic_cast<Entity_Paddle*>(&other)) {
         // Print debug information
         std::cout << "Ball collided with Paddle" << std::endl;
         Physics::reflectBall(*this, {0, -1}); // Reflect upwards
     } else if (dynamic_cast<Entity_Brick*>(&other)) {
-        // If ball collides with a brick
-        
+        std::cout << "Ball collided with Brick" << std::endl;
+        // deflect ball based on collision normal
+        Physics::reflectBall(*this, normal);
+        /* TODO: Notify brick of collision
+        brick = dynamic_cast<Entity_Brick*>(&other);
+        if (brick) {
+            brick->onCollision(*this);
+            brick = nullptr; // reset reference
+        }
+         
     }
+    */
+    
 }
 
 // destructor 
