@@ -23,6 +23,8 @@ public:
     void update(float dt) override;
     void render(SDL_Renderer* r) override;
     void onCollision(Entity& other) override;
+
+    glm::vec2 velocity{300.0f, -300.0f};
     
     [[nodiscard]] float Radius() const { return radius; }
     [[nodiscard]] float Size() const { return radius * 2.0f; } // diameter
@@ -31,10 +33,11 @@ public:
     
 private:
     float radius = 10.0f; // default radius
-    glm::vec2 normal; // collision normal
+    float maxSpeed = 500.0f;
+    glm::vec2 normal{}; // collision normal
     SDL_Texture* MakeCircleTexture(SDL_Renderer* r, int diameter);
     Game& game = Game::getInstance();
-    State* currentState;
+    State* currentState{};
     Entity_Paddle* paddle{nullptr}; // reference to paddle for collision
 };
 

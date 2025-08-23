@@ -8,6 +8,7 @@
 #include "Entity.hpp"
 #include <SDL.h>
 
+struct Bounds { float minX, maxX; };
 
 class Entity_Paddle : public Entity {
 public:
@@ -18,13 +19,17 @@ public:
     void update(float dt) override;
     void render(SDL_Renderer* r) override;
     void move (float dir, float deltaTime);
+
+    [[nodiscard]] glm::vec2 getVelocity() const { return velocity; }
+    float getSpeedX() const { return velocity.x; }
+    int getMoveSign() const { return moveSign; } // -1, 0, +1
     
 private:
-    struct {
-        float minX{0.0f};
-        float maxX{800.0f}; // TODO: set to actual play area width
-    } bounds;
+    Bounds bounds{0.f, 0.f};
     float speed {500.0f}; // default speed (pixels per second)
+    float prevX{0.f};
+    glm::vec2 velocity{0.f, 0.f};
+    int moveSign{0}; // -1 left, +1 right, 0 none
 };
 
 

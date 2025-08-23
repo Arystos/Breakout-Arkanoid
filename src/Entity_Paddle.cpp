@@ -12,9 +12,13 @@ Entity_Paddle::Entity_Paddle() {
             (game.Width() * 0.5f - size.x * 0.5f),
             (game.Height() - size.y - 100.0f)
     };
+    bounds = {0.f, static_cast<float>(game.Width())};
     size = {100.0f, 20.0f};
-    speed = 300.0f; // default speed
-    active = false;
+    speed = 500.0f; // default speed
+    prevX = position.x;
+    velocity = {0.f, 0.f};
+    moveSign = 0;
+    active = true;
 }
 
 
@@ -65,14 +69,33 @@ void Entity_Paddle::update(float dt) {
 }
 
 void Entity_Paddle::move(float dir, float deltaTime) {
-    // Update paddle position based on direction and speed
-    position.x += dir * speed * deltaTime;
     
-    // Clamp paddle position to bounds
+    if (deltaTime <= 0.f) deltaTime = 1.f / 60.f; // guard
+    const float oldX = position.x;
+
+    // update position
+    position.x += std::clamp(dir, -1.f, 1.f) * speed * deltaTime;
+
+    // clamp to bounds
+    bool clampedLeft = false, clampedRight = false;
     if (position.x < bounds.minX) {
         position.x = bounds.minX;
+        clampedLeft = true;
     } else if (position.x + size.x > bounds.maxX) {
         position.x = bounds.maxX - size.x;
+        clampedRight = true;
     }
+
+    // paddle velocity
+    velocity.x = (position.x - oldX) / deltaTime;
+    velocity.y = 0.f;
+
+    // movement direction (-1 left, +1 right, 0 none)
+    if ((clampedLeft && dir < 0.f) || (clampedRight && dir > 0.f))
+        moveSign = 0;
+    else
+        moveSign = (velocity.x > 1e-3f) ? 1 : (velocity.x < -1e-3f ? -1 : 0);
+
+    prevX = position.x;
     
 }
