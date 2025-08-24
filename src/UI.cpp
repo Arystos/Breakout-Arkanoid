@@ -188,4 +188,47 @@ namespace UI {
         }
     }
 
+    void VBox_PerformLayout(VerticalBox& box) {
+        if (box.items.empty()) return;
+        int y = box.rect.y + box.padding;
+        for (auto* b : box.items) {
+            if (!b) continue;
+            b->rect.y = y;
+            if (box.centerX && box.rect.w > 0) {
+                CenterHoriz(b->rect, box.rect.w);
+                layoutCaptionInButton(*b);
+            }
+            if (box.expandWidth && box.rect.w > 0) {
+                b->rect.w = box.rect.w - box.padding * 2;
+                // TODO: Test-> Uniform width and recalculate caption position
+                if (box.equalWidth) {
+                    int maxW = 0;
+                    for (auto *bi: box.items) { if (bi && bi->rect.w > maxW) maxW = bi->rect.w; }
+                    b->rect.w = maxW;
+                }
+            }
+            layoutCaptionInButton(*b);
+            y += b->rect.h + box.spacing;
+        }
+    }
+
+
+    void HBox_PerformLayout(HorizontalBox& box) {
+        if (box.items.empty()) return;
+        int x = box.rect.x + box.padding;
+        for (auto* b : box.items) {
+            if (!b) continue;
+            b->rect.x = x;
+            if (box.centerY && box.rect.h > 0) {
+                CenterVert(b->rect, box.rect.h);
+                layoutCaptionInButton(*b);
+            }
+            if (box.expandHeight && box.rect.h > 0) {
+                b->rect.h = box.rect.h - box.padding * 2;
+            }
+            layoutCaptionInButton(*b);
+            x += b->rect.w + box.spacing;
+        }
+    }
+
 }

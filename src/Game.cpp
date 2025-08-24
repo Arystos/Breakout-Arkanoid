@@ -1,9 +1,11 @@
 #include <Game.hpp>
+#include "UI.hpp"
+#include "State_MainMenu.hpp"
 #include <iostream>
 
 static Uint64 nowPerf() { return SDL_GetPerformanceCounter(); } // current time in ticks
 
-Game::Game() {}
+Game::Game() = default;
 
 Game::~Game() {
     states.clear(); // Clear all states
@@ -22,6 +24,11 @@ bool Game::init(const char *title, bool fullscreen) {
     if (fullscreen) {
         flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
     }
+
+    // Disable filtering when scaling (pixel art)
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");   // "0" o "nearest"
+    // Enable High-DPI support
+    SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "0");
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
@@ -49,6 +56,23 @@ bool Game::init(const char *title, bool fullscreen) {
         return false;
     }
 
+    // Pixel 1:1 mapping for logical to physical pixels (no automatic scaling)
+    {
+        int outW = 0, outH = 0;
+        SDL_GetRendererOutputSize(renderer, &outW, &outH); // dimensione in pixel fisici
+        width = outW; height = outH;
+    }
+
+    /* 4B) Alternativa: risoluzione logica fissa con scaling "a scalini" (integri)
+       (scommenta questo blocco e commenta il blocco 4A, se preferisci una base fissa)
+    {
+        const int V_W = 1280, V_H = 720;
+        SDL_RenderSetLogicalSize(renderer_, V_W, V_H);      // virtual resolution
+        SDL_RenderSetIntegerScale(renderer_, SDL_TRUE);     // evita filtri → nitido
+        w_ = V_W; h_ = V_H;
+    }
+    */
+
     // Load a default font for UI
     uiFont_ = TTF_OpenFont("assets/fonts/Roboto-Regular.ttf", 28);
     if (!uiFont_) { SDL_Log("TTF_OpenFont: %s", TTF_GetError()); return false; }
@@ -63,6 +87,9 @@ void Game::run() {
     
     const float targetFrameTime = 1.0f / FPS;
     Uint64 now = SDL_GetPerformanceCounter();
+
+    // Main menu state
+    Game::getInstance().changeState(std::make_unique<State_MainMenu>());
     
     while (running) {
         Uint64 frameStart = SDL_GetPerformanceCounter();
@@ -89,9 +116,6 @@ void Game::run() {
         // Frame cap
         float frameTime = (SDL_GetPerformanceCounter() - frameStart) / static_cast<float>(SDL_GetPerformanceFrequency());
         if (frameTime < targetFrameTime) SDL_Delay(static_cast<Uint32>((targetFrameTime - frameTime) * 1000.0f));
-        
-        // Show current fps as text on top left corner with SDL text
-        
         
     }
     

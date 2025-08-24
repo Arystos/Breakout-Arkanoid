@@ -32,9 +32,38 @@ void State_GameOver::update(Game &game, float dt) {
 
 void State_GameOver::render(Game &game) {
     SDL_Renderer* r = game.getRenderer();
-    // banner
-    SDL_SetRenderDrawColor(r, 180, 50, 50, 255);
-    SDL_Rect banner{game.Width() / 2 - 180, game.Height() / 2 - 40, 360, 80 };
-    SDL_RenderFillRect(r, &banner);
-    // (Text later via SDL_ttf; for now just the block)
+    
+    UI::DrawLabel(r, title);
+    //UI::DrawLabel(r, scoreText);
+    UI::DrawLabel(r, instruction);
+}
+
+void State_GameOver::onEnter(Game &game) {
+    State::onEnter(game);
+    std::cout << "Game Over State" << std::endl;
+    
+    auto* renderer = game.getRenderer();
+    auto* uiFont = game.uiFont();
+    
+    // Title
+    UI::BuildLabel(renderer, title, "Game Over", uiFont, titleColor, UI::AlignH::Center);
+    title.dst.w *= 2;
+    title.dst.h *= 2;
+    title.dst.x = (game.Width() - title.dst.w) / 2; // center horizontally
+    title.dst.y = game.Height() / 3;
+    // Set the title to be bigger
+    
+    
+    // Score
+    /*
+    std::string scoreTextStr = "Score: " + std::to_string(score);
+    UI::BuildLabel(renderer, scoreText, scoreTextStr, uiFont, textColor, UI::AlignH::Center);
+    scoreText.dst.x = (game.Width() - scoreText.dst.w) / 2; // center horizontally
+    scoreText.dst.y = game.Height() / 2; // position at 1/2 of the screen height
+    */ 
+    
+    // Instruction
+    UI::BuildLabel(renderer, instruction, "Press Enter to return to Main Menu", uiFont, textColor, UI::AlignH::Center);
+    instruction.dst.x = (game.Width() - instruction.dst.w) / 2; // center horizontally
+    instruction.dst.y = game.Height() / 2; // position at 2/3rd of the screen height
 }

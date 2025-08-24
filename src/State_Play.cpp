@@ -25,6 +25,8 @@ void State_Play::onEnter(Game &game) {
     ball->attachTo(*paddle);
     ball->stuckToPaddle = false;
     ball->active = true;
+    
+    game.setBallCount(1); // Reset ball count
 }
 
 void State_Play::handleInput(Game &game, const SDL_Event &event) {

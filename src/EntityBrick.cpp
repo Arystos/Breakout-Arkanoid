@@ -3,6 +3,8 @@
 //
 
 #include "Entity_Brick.hpp"
+#include "Game.hpp"
+#include "StatePlay.hpp"
 
 Entity_Brick::Entity_Brick() {
     size = {60.0f, 20.0f};
@@ -49,7 +51,7 @@ SDL_Texture *Entity_Brick::textureForType(BrickType t) {
 void Entity_Brick::onCollision(Entity &other) {
     if (type != BrickType::Indestructible) { 
         health--; 
-        active = health > 0; 
+        active = health > 0;
     }
 }
 
@@ -70,5 +72,17 @@ void Entity_Brick::setColor() {
         default:
             color = {255, 255, 255, 255}; // White
             break;
+    }
+}
+
+Entity_Brick::~Entity_Brick() {
+    Game& game = Game::getInstance();
+    // get game state
+    State* currentState = game.getCurrentState();
+    if (auto *playState = dynamic_cast<State_Play*>(currentState)) {
+        if (playState->getBrickCount() == 1) {
+            // TODO: Level complete, last brick destroyed
+            game.changeState(std::make_unique<State_Play>());
+        }
     }
 }

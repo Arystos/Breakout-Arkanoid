@@ -42,6 +42,28 @@ namespace UI {
         bool pressed = false;
     };
 
+    // ---- Layout Box ----
+
+    struct VerticalBox {
+        SDL_Rect rect{0,0,0,0};     // area del box
+        int padding = 0;            // padding interno (tutti i lati)
+        int spacing = 8;            // spazio tra elementi
+        bool equalWidth = true;     // uniforma la larghezza dei bottoni
+        bool expandWidth = true;    // se true, usa tutta la larghezza disponibile del box
+        bool centerX = false;       // centra i bottoni orizzontalmente se non si espande
+        std::vector<Button*> items; // puntatori ai bottoni da disporre
+    };
+
+    struct HorizontalBox {
+        SDL_Rect rect{0,0,0,0};     // area del box
+        int padding = 0;            // padding interno (tutti i lati)
+        int spacing = 8;            // spazio tra elementi
+        bool equalHeight = true;    // uniforma l'altezza dei bottoni
+        bool expandHeight = true;   // se true, usa tutta l'altezza disponibile del box
+        bool centerY = false;       // centra i bottoni verticalmente se non si espande
+        std::vector<Button*> items; // puntatori ai bottoni da disporre
+    };
+
     // Crea una texture da testo UTF-8. Restituisce nullptr in caso di errore.
     SDL_Texture* MakeText(SDL_Renderer* r, TTF_Font* f, const std::string& s, SDL_Color col);
 
@@ -83,10 +105,19 @@ namespace UI {
 
     // Centra un SDL_Rect orizzontalmente rispetto a containerW (aggiorna r.x).
     inline void CenterHoriz(SDL_Rect& r, int containerW) { r.x = (containerW - r.w) / 2; }
+    inline void CenterVert(SDL_Rect& r, int containerH) { r.y = (containerH - r.h) / 2; }
 
     // Utility: controlla se un punto è dentro un rettangolo.
     inline bool PointInRect(int mx, int my, const SDL_Rect& r) {
         return mx >= r.x && mx < (r.x + r.w) && my >= r.y && my < (r.y + r.h);
     }
+
+    // Utility: disegna un rettangolo pieno
+    inline void VBox_Add(VerticalBox& box, Button& b)   { box.items.push_back(&b); }
+    inline void HBox_Add(HorizontalBox& box, Button& b) { box.items.push_back(&b); }
+
+    // Applica il layout, aggiornando rect e caption dei bottoni
+    void VBox_PerformLayout(VerticalBox& box);
+    void HBox_PerformLayout(HorizontalBox& box);
 
 } // namespace UI

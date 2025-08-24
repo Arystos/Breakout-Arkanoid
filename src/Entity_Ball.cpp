@@ -42,7 +42,7 @@ void Entity_Ball::update(float dt) {
     } else if (position.y <= 0) { // Top border
         position.y = 0.0f;
         velocity.y = -velocity.y;
-    } else if (position.y + radius * 2.0f >= game.Height()) { // Bottom border
+    } else if (position.y + radius * 2.0f >= float(game.Height())) { // Bottom border
         game.setBallCount(game.BallCount() - 1);
         toBeDestroyed = true; // Mark for removal
         if (game.BallCount() <= 0) {
@@ -154,6 +154,11 @@ void Entity_Ball::onCollision(Entity &entity) {
             velocity = glm::normalize(velocity) * maxSpeed;
         }
         brick->onCollision(*this);
+        // destroy the brick if health <= 0
+        if (!brick->active) {
+            // destroy brick
+            brick->toBeDestroyed = true;
+        }
     }
 #pragma endregion
     

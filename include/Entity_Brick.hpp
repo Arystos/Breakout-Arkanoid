@@ -16,6 +16,8 @@ class Entity_Brick : public Entity {
 public:
     // Costructor
     Entity_Brick();
+    // destructor
+    ~Entity_Brick() override;
     int health;
     BrickType type;
     bool dropPowerUp{false};

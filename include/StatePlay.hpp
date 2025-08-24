@@ -25,7 +25,7 @@ public:
     Entity_Paddle& getPaddle() { return *paddle; }
     Entity_Ball& getBall() { return *ball; }
     std::vector<Entity*> getEntities() override;
-    //std::vector<Entity *> &entities();
+    inline int getBrickCount() const { return static_cast<int>(bricks.size()); }
     bool destroyEntity(Entity* e); // remove entity from the state
     std::vector<Entity_Brick> loadLevel (const std::string& file, float offsetX, float offsetY); 
 
