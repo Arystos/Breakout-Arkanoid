@@ -14,7 +14,7 @@ void State_Play::onEnter(Game &game) {
     State::onEnter(game);
 
     // load level
-    bricks = loadLevel("assets/grid.txt", 50, 50);
+    bricks = loadLevel("assets/grid.txt", 50.0f, 50.0f);
     std::cout << "Loaded " << bricks.size() << " bricks." << std::endl;
 
     // acttivate the paddle
@@ -73,13 +73,10 @@ void State_Play::update(Game &game, float dt) {
     // cleanup inactive entities
     if (ball && ball->toBeDestroyed) ball.reset();
     if (paddle && paddle->toBeDestroyed) paddle.reset();
-    for (auto it = bricks.begin(); it != bricks.end(); ) {
-        if (it->toBeDestroyed) {
-            it = bricks.erase(it);
-        } else {
-            ++it;
-        }
-    }
+    bricks.erase(std::remove_if(bricks.begin(), bricks.end(),
+                                [](const std::unique_ptr<Entity_Brick>& b) 
+                                { return b->toBeDestroyed; }),
+                 bricks.end());
 }
 
 void State_Play::render(Game &game) {
@@ -93,7 +90,7 @@ void State_Play::render(Game &game) {
     if (paddle && paddle->active) paddle->render(renderer);
     if (ball && ball->active) ball->render(renderer);
     for (auto& brick : bricks) {
-        if (brick.active) brick.render(renderer);
+        if (brick->active) brick->render(renderer);
     }
     
     if (bricks.empty()) {
@@ -107,8 +104,8 @@ std::vector<Entity *> State_Play::getEntities() {
     if (paddle && paddle->active) entities.push_back(paddle.get());
     if (ball && ball->active) entities.push_back(ball.get());
     for (auto& brick : bricks) {
-        if (brick.active) {
-            entities.push_back(&brick);
+        if (brick->active) {
+            entities.push_back(brick.get());
         }
     }
     return entities;
@@ -118,7 +115,7 @@ bool State_Play::destroyEntity(Entity *e) {
     if (e == (paddle ? paddle.get() : nullptr)) { paddle.reset(); return true; }
     if (e == (ball   ? ball.get()   : nullptr)) { ball.reset();   return true; }
     for (auto it = bricks.begin(); it != bricks.end(); ++it) {
-        if (&(*it) == e) {
+        if (e == it->get()) {
             bricks.erase(it);
             return true;
         }
@@ -128,13 +125,13 @@ bool State_Play::destroyEntity(Entity *e) {
 }
 
 // TODO: check why bricks destroyer is called at init
-std::vector<Entity_Brick>
+std::vector<std::unique_ptr<Entity_Brick>>
 State_Play::loadLevel(const std::string &file, float offsetX, float offsetY) {
-    std::vector<Entity_Brick> bricks;
+    std::vector<std::unique_ptr<Entity_Brick>> bricks;
     std::ifstream in(file);
     if (!in) {
         SDL_Log("Failed to open level file: %s", file.c_str());
-        return bricks;
+        return {};
     }
     std::string line;
     int row = 0;
@@ -174,7 +171,7 @@ State_Play::loadLevel(const std::string &file, float offsetX, float offsetY) {
                         break;
                 }
                 brick.setColor();
-                bricks.emplace_back(brick);
+                bricks.push_back(std::make_unique<Entity_Brick>(std::move(brick)));
             }
             col++;
         }
