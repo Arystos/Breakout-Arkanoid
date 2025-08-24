@@ -27,6 +27,20 @@ void State_Play::onEnter(Game &game) {
     ball->active = true;
     
     game.setBallCount(1); // Reset ball count
+    
+    // init UI font
+    font = game.uiFont();
+    if (!font) {
+        SDL_Log("Failed to load font for State_Play");
+    }
+    
+    // init UI labels
+    auto* renderer = game.getRenderer();
+    UI::BuildLabel(renderer, winTitle, "You Win!", font, titleColor, UI::AlignH::Center);
+    winTitle.dst.w *= 2;
+    winTitle.dst.h *= 2;
+    winTitle.dst.x = (game.Width() - winTitle.dst.w) / 2; // center horizontally
+    winTitle.dst.y = game.Height() / 3;
 }
 
 void State_Play::handleInput(Game &game, const SDL_Event &event) {
@@ -55,9 +69,6 @@ void State_Play::update(Game &game, float dt) {
     // Update paddle, ball etc.
     if (paddle && paddle->active) paddle->update(dt);
     if (ball && ball->active) ball->update(dt);
-    for (auto& brick : bricks) {
-        if (brick.active) brick.update(dt);
-    }
 
     // cleanup inactive entities
     if (ball && ball->toBeDestroyed) ball.reset();
@@ -72,17 +83,21 @@ void State_Play::update(Game &game, float dt) {
 }
 
 void State_Play::render(Game &game) {
-    SDL_Renderer* r = game.getRenderer();
-    // placeholder: draw a playfield box
+    SDL_Renderer* renderer = game.getRenderer();
+    // TODO: placeholder: draw a playfield box
     SDL_Rect box{40, 40, game.Width() - 80, game.Height() - 80 };
-    SDL_SetRenderDrawColor(r, 60, 60, 60, 255);
-    SDL_RenderDrawRect(r, &box);
+    SDL_SetRenderDrawColor(renderer, 60, 60, 60, 255);
+    SDL_RenderDrawRect(renderer, &box);
     
     // render paddle, ball, bricks etc.
-    if (paddle && paddle->active) paddle->render(r);
-    if (ball && ball->active) ball->render(r);
+    if (paddle && paddle->active) paddle->render(renderer);
+    if (ball && ball->active) ball->render(renderer);
     for (auto& brick : bricks) {
-        if (brick.active) brick.render(r);
+        if (brick.active) brick.render(renderer);
+    }
+    
+    if (bricks.empty()) {
+        UI::DrawLabel(renderer, winTitle);
     }
     
 }
@@ -102,10 +117,17 @@ std::vector<Entity *> State_Play::getEntities() {
 bool State_Play::destroyEntity(Entity *e) {
     if (e == (paddle ? paddle.get() : nullptr)) { paddle.reset(); return true; }
     if (e == (ball   ? ball.get()   : nullptr)) { ball.reset();   return true; }
+    for (auto it = bricks.begin(); it != bricks.end(); ++it) {
+        if (&(*it) == e) {
+            bricks.erase(it);
+            return true;
+        }
+    }
     SDL_Log("State_Play::destroyEntity: Entity not found.");
     return false;
 }
 
+// TODO: check why bricks destroyer is called at init
 std::vector<Entity_Brick>
 State_Play::loadLevel(const std::string &file, float offsetX, float offsetY) {
     std::vector<Entity_Brick> bricks;

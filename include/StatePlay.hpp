@@ -10,6 +10,7 @@
 #include "Entity_Paddle.hpp"
 #include "Entity_Ball.hpp"
 #include "Entity_Brick.hpp"
+#include "UI.hpp"
 #include <memory>
 
 class State_Play: public State {
@@ -38,6 +39,23 @@ private:
     std::unique_ptr<Entity_Paddle> paddle = std::make_unique<Entity_Paddle>();
     std::unique_ptr<Entity_Ball> ball = std::make_unique<Entity_Ball>();
     std::vector<Entity_Brick> bricks;
+    
+    // Text rendering
+    TTF_Font* font = nullptr;
+    struct Label {
+        std::string text;
+        SDL_Texture *tex = nullptr;
+        SDL_Rect dst{0, 0, 0, 0};
+    };
+    Label wonLabel{"You Win!"};
+    
+    // UI
+    UI::Label winTitle;
+    
+    // Cache colors
+    // white
+    SDL_Color titleColor{240, 240, 240, 255};
+    
 };
 
 

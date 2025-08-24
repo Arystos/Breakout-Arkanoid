@@ -97,7 +97,8 @@ SDL_Texture *Entity_Ball::MakeCircleTexture(SDL_Renderer *r, int diameter) {
 }
 
 void Entity_Ball::onCollision(Entity &entity) {
-#pragma region Paddle
+    
+#pragma region Paddle Collision
     if (auto* paddle = dynamic_cast<Entity_Paddle*>(&entity)) {
         if (stickyMode) {
             stuckToPaddle = true;
@@ -132,9 +133,9 @@ void Entity_Ball::onCollision(Entity &entity) {
     }
 #pragma endregion
 
-#pragma region Brick
+#pragma region Brick Collsion
     if (auto* brick = dynamic_cast<Entity_Brick*>(&entity)) {
-        // riflessione standard
+        // reflection
         velocity = glm::reflect(velocity, normal);
         position += normal * (radius * 0.5f);
         // Clamp the bouce angle to avoid too horizontal or vertical trajectories
@@ -156,8 +157,8 @@ void Entity_Ball::onCollision(Entity &entity) {
         brick->onCollision(*this);
         // destroy the brick if health <= 0
         if (!brick->active) {
-            // destroy brick
-            brick->toBeDestroyed = true;
+            if (auto* playState = dynamic_cast<State_Play*>(currentState))
+                playState->destroyEntity(brick);
         }
     }
 #pragma endregion

@@ -82,7 +82,7 @@ Entity_Brick::~Entity_Brick() {
     if (auto *playState = dynamic_cast<State_Play*>(currentState)) {
         if (playState->getBrickCount() == 1) {
             // TODO: Level complete, last brick destroyed
-            game.changeState(std::make_unique<State_Play>());
+            playState->getBall().velocity = {0.0f, 0.0f};
         }
     }
 }
