@@ -48,6 +48,7 @@ void State_Play::handleInput(Game &game, const SDL_Event &event) {
                 game.pushState(std::make_unique<State_Pause>());
                 break;
             case SDL_SCANCODE_SPACE:
+                game.changeState(std::make_unique<State_GameOver>());
                 // Detach all balls from the paddle
                 for (auto& ball : balls) {
                     if (ball->stuckToPaddle) {
@@ -87,11 +88,6 @@ void State_Play::update(Game &game, float dt) {
     balls.erase(std::remove_if(balls.begin(), balls.end(),
                                [](auto& b){
                                    return b == nullptr; }), balls.end());
-
-    if (game.getBallCount() <= 0) {
-        // Game Over
-        game.changeState(std::make_unique<State_GameOver>());
-    }
                                    
     if (paddle && paddle->toBeDestroyed) paddle.reset();
     bricks.erase(std::remove_if(bricks.begin(), bricks.end(),
@@ -100,6 +96,13 @@ void State_Play::update(Game &game, float dt) {
     powerUps.erase(std::remove_if(powerUps.begin(), powerUps.end(),
                                   [](auto& p){
         return !p->active; }), powerUps.end());
+
+    // Lost Condition
+    if (game.getBallCount() <= 0) {
+        // Game Over
+        game.changeState(std::make_unique<State_GameOver>());
+        return;
+    }
     
     // Win Condition
     if (bricks.empty()) {
