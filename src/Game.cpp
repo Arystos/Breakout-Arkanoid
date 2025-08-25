@@ -117,6 +117,14 @@ void Game::run() {
         float frameTime = (SDL_GetPerformanceCounter() - frameStart) / static_cast<float>(SDL_GetPerformanceFrequency());
         if (frameTime < targetFrameTime) SDL_Delay(static_cast<Uint32>((targetFrameTime - frameTime) * 1000.0f));
         
+        // TODO: show FPS in top left corner (for debugging)
+        auto *renderer = getRenderer();
+        if (renderer) {
+            std::string fpsText = "FPS: " + std::to_string(static_cast<int>(1.0f / dt));
+            UI::BuildLabel(renderer, fpsLabel, fpsText, uiFont_, fpsColor, UI::AlignH::Center);
+            UI::DrawLabel(renderer, fpsLabel);
+        } 
+        
     }
     
 }

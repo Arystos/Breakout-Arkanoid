@@ -7,6 +7,7 @@
 #include <SDL_ttf.h>
 #include <iostream>
 #include "State.hpp"
+#include "UI.hpp"
 
 
 //class State; // Forward declaration
@@ -58,6 +59,21 @@ private:
     //AssetManager assetManager;
     float FPS = 60.0f; // Frames per second
     int ballCount = 0;
+    
+    // text rendering
+    TTF_Font* font = nullptr;
+    struct Label {
+        std::string text;
+        SDL_Texture *tex = nullptr;
+        SDL_Rect dst{0, 0, 0, 0};
+    };
+    UI::Label fpsLabel;
+    
+    // color cache
+    SDL_Color fpsColor{255, 255, 0, 255};
+    
+    // UI elements
+    UI::Label fpsCounter;
 };
 
 #endif //BREAKOUT_GAME_HPP

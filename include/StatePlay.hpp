@@ -28,12 +28,13 @@ public:
     std::vector<Entity*> getEntities() override;
     inline int getBrickCount() const { return static_cast<int>(bricks.size()); }
     bool destroyEntity(Entity* e); // remove entity from the state
-    std::vector<std::unique_ptr<Entity_Brick>> loadLevel (const std::string& file, float offsetX, float offsetY); 
+    static std::vector<std::unique_ptr<Entity_Brick>> loadLevel (const std::string& file, float offsetX, float offsetY); 
 
 private:
     bool paused = false; // Flag to check if the game is paused
     int score = 0; // Player's score
     float deltaTime = 0.0f; // Time since last update, used for movement calculations
+    //glm::vec2 normal{}; // collision normal
     // TODO: Add paddle, ball, bricks
 
     std::unique_ptr<Entity_Paddle> paddle = std::make_unique<Entity_Paddle>();

@@ -53,6 +53,7 @@ void Entity_Ball::update(float dt) {
     }
     
     
+    
     // check collision with all active entities in the current state
     for (Entity* entity : currentState->getEntities()) {
         if (!entity || entity == this || !entity->active) continue;
@@ -63,6 +64,7 @@ void Entity_Ball::update(float dt) {
 
         onCollision(*entity);
     }
+    
     
 }
 

@@ -4,6 +4,7 @@
 
 #include "StatePlay.hpp"
 #include "State_Pause.hpp"
+#include "Physics.hpp"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -12,10 +13,6 @@ void State_Play::onEnter(Game &game) {
     // init level, paddle, ball etc. later
     std::cout << "Playing State" << std::endl;
     State::onEnter(game);
-
-    // load level
-    bricks = loadLevel("assets/grid.txt", 50.0f, 50.0f);
-    std::cout << "Loaded " << bricks.size() << " bricks." << std::endl;
 
     // acttivate the paddle
     paddle->active = true;
@@ -27,6 +24,10 @@ void State_Play::onEnter(Game &game) {
     ball->active = true;
     
     game.setBallCount(1); // Reset ball count
+
+    // load level
+    bricks = loadLevel("assets/grid.txt", 50.0f, 50.0f);
+    std::cout << "Loaded " << bricks.size() << " bricks." << std::endl;
     
     // init UI font
     font = game.uiFont();
@@ -74,9 +75,13 @@ void State_Play::update(Game &game, float dt) {
     if (ball && ball->toBeDestroyed) ball.reset();
     if (paddle && paddle->toBeDestroyed) paddle.reset();
     bricks.erase(std::remove_if(bricks.begin(), bricks.end(),
-                                [](const std::unique_ptr<Entity_Brick>& b) 
-                                { return b->toBeDestroyed; }),
-                 bricks.end());
+                                [](auto& b){
+        return !b->active; }), bricks.end());
+    // Win Condition
+    if (bricks.empty()) {
+        if (ball) ball->velocity = {0.f, 0.f};
+        // TODO: Winning condition, go to next level
+    }
 }
 
 void State_Play::render(Game &game) {
@@ -124,7 +129,7 @@ bool State_Play::destroyEntity(Entity *e) {
     return false;
 }
 
-// TODO: check why bricks destroyer is called at init
+// TODO: check why bricks destroyer is called at 
 std::vector<std::unique_ptr<Entity_Brick>>
 State_Play::loadLevel(const std::string &file, float offsetX, float offsetY) {
     std::vector<std::unique_ptr<Entity_Brick>> bricks;
@@ -139,40 +144,21 @@ State_Play::loadLevel(const std::string &file, float offsetX, float offsetY) {
         std::istringstream iss(line);
         int val, col = 0;
         while (iss >> val) {
-            if (val != 0) { // 0 means empty space
-                Entity_Brick brick;
-                // Calculate position based on row and column
-                // TODO: Implement proper spacing and sizing
-                float x = offsetX + float(col) * (brick.size.x + 10);
-                float y = offsetY + float(row) * (brick.size.y + 10);
-                brick.position = {x, y};
-                // switch case for different brick types
-                switch (val) {
-                    case 1:
-                        brick.type = BrickType::Normal;
-                        brick.health = 1;
-                        break;
-                    case 2:
-                        brick.type = BrickType::Strong;
-                        brick.health = 2;
-                        break;
-                    case 3:
-                        brick.type = BrickType::Indestructible;
-                        brick.health = -1; // Indestructible
-                        break;
-                    case 4:
-                        brick.type = BrickType::Mystery;
-                        brick.health = 1;
-                        brick.dropPowerUp = true;
-                        break;
-                    default:
-                        brick.type = BrickType::Normal;
-                        brick.health = 1;
-                        break;
-                }
-                brick.setColor();
-                bricks.push_back(std::make_unique<Entity_Brick>(std::move(brick)));
-            }
+            if (val == 0) { col++; continue; } // 0 means empty space
+            // Emplace bricks
+            auto& brick = *bricks.emplace_back(std::make_unique<Entity_Brick>()).get();
+            brick.position = {
+                    offsetX + float(col) * (brick.size.x + 10),
+                    offsetY + float(row) * (brick.size.y + 10)
+            };
+            brick.type = (val == 1) ? BrickType::Normal :
+                     (val == 2) ? BrickType::Strong :
+                     (val == 3) ? BrickType::Indestructible :
+                                  BrickType::Mystery;
+            brick.health = (brick.type == BrickType::Strong) ? 2 : 1;
+            brick.active = (brick.type != BrickType::Mystery); // Mystery bricks inactive at start
+            brick.setColor();
+            
             col++;
         }
         row++;

@@ -75,6 +75,9 @@ void Entity_Brick::setColor() {
     }
 }
 
+Entity_Brick::~Entity_Brick() = default;
+
+/*
 Entity_Brick::~Entity_Brick() {
     Game& game = Game::getInstance();
     // get game state
@@ -86,3 +89,4 @@ Entity_Brick::~Entity_Brick() {
         }
     }
 }
+ */
