@@ -25,13 +25,14 @@ public:
     
     [[nodiscard]] float getDeltaTime() const { return deltaTime; }
     Entity_Paddle& getPaddle() { return *paddle; }
-    Entity_Ball& getBall() { return *ball; }
+    std::vector<std::unique_ptr<Entity_Ball>>& getBalls() { return balls; }
     std::vector<Entity*> getEntities() override;
     inline int getBrickCount() const { return static_cast<int>(bricks.size()); }
     bool destroyEntity(Entity* e); // remove entity from the state
     static std::vector<std::unique_ptr<Entity_Brick>> loadLevel (const std::string& file, float offsetX, float offsetY);
 
     std::unique_ptr<Entity_PowerUp> spawnPowerUp(const glm::vec2 &position);
+    std::unique_ptr<Entity_Ball> spawnBall();
 
 private:
     bool paused = false; // Flag to check if the game is paused
@@ -41,7 +42,8 @@ private:
     // TODO: Add paddle, ball, bricks
 
     std::unique_ptr<Entity_Paddle> paddle = std::make_unique<Entity_Paddle>();
-    std::unique_ptr<Entity_Ball> ball = std::make_unique<Entity_Ball>();
+    //std::unique_ptr<Entity_Ball> ball = std::make_unique<Entity_Ball>();
+    std::vector<std::unique_ptr<Entity_Ball>> balls = {};
     std::vector<std::unique_ptr<Entity_Brick>> bricks = {};
     std::vector<std::unique_ptr<Entity_PowerUp>> powerUps = {};
     

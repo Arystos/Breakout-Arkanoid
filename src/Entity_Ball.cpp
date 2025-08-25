@@ -43,12 +43,9 @@ void Entity_Ball::update(float dt) {
         position.y = 0.0f;
         velocity.y = -velocity.y;
     } else if (position.y + radius * 2.0f >= float(game.Height())) { // Bottom border
+        std::cout << "Ball lost!" << std::endl;
         game.setBallCount(game.BallCount() - 1);
-        toBeDestroyed = true; // Mark for removal
-        if (game.BallCount() <= 0) {
-            // Transition to Game Over state
-            game.changeState(std::make_unique<State_GameOver>());
-        }
+        toBeDestroyed = true;
         return;
     }
     

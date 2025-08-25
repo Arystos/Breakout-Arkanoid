@@ -11,9 +11,10 @@ Entity_PowerUp::Entity_PowerUp() {
     active = true;
     size = {20.0f, 20.0f};
     // Randomly assign a power-up type
-    static std::mt19937 rng{std::random_device{}()};
+    static std::mt19937 rng{std::random_device{}()}; //random number generator
     std::uniform_int_distribution<int> dist(0, static_cast<int>(PowerUpType::Count) - 7);
-    type = static_cast<PowerUpType>(dist(rng));
+    //type = static_cast<PowerUpType>(dist(rng));
+    type = static_cast<PowerUpType>(2);
     std::cout << "PowerUp created with type " << static_cast<int>(type) << std::endl;
 }
 
@@ -60,9 +61,9 @@ void Entity_PowerUp::render(SDL_Renderer *renderer) {
 void Entity_PowerUp::onCollision(Entity &other) {
     // dynamic_cast to paddle
     if (auto* paddle = dynamic_cast<Entity_Paddle*>(&other)) {
-        // TODO: Apply the power-up effect based on its type
-        paddle->onCollision(*this);
+        if (!active) return;
         active = false;
         toBeDestroyed = true;
+        paddle->onCollision(*this);
     }
 }

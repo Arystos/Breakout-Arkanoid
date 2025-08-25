@@ -44,6 +44,7 @@ public:
     TTF_Font* uiFont() const { return uiFont_; }
     
     int BallCount() const { return ballCount; }
+    int getBallCount() const { return ballCount; }
     int setBallCount(int count) { ballCount = count; return ballCount; }
     
 

@@ -5,6 +5,7 @@
 #include "Entity_Paddle.hpp"
 #include "Game.hpp"
 #include "Entity_PowerUp.hpp"
+#include "StatePlay.hpp"
 
 // constructor
 Entity_Paddle::Entity_Paddle() {
@@ -106,8 +107,10 @@ void Entity_Paddle::move(float dir, float deltaTime) {
 void Entity_Paddle::onCollision(Entity &other) {
     if (auto* powerUp = dynamic_cast<Entity_PowerUp*>(&other)) {
         switch (powerUp->type) {
-            case PowerUpType::MultiBall:
-            //TODO: spawn another ball
+            case PowerUpType::MultiBall: // spawn an extra ball
+                if (auto* playState = dynamic_cast<State_Play*>(
+                        Game::getInstance().getCurrentState()))
+                    playState->spawnBall();
                 break;
             case PowerUpType::ExpandPaddle:
                 size.x *= 1.25f; // expand paddle size

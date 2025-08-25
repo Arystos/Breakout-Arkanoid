@@ -5,6 +5,7 @@
 #include "StatePlay.hpp"
 #include "State_Pause.hpp"
 #include "Physics.hpp"
+#include "StateGameOver.hpp"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -16,21 +17,15 @@ void State_Play::onEnter(Game &game) {
 
     // acttivate the paddle
     paddle->active = true;
-
-    // Place ball on top of the paddle
-    //ball.radius = 10.0f;
-    ball->attachTo(*paddle);
-    ball->stuckToPaddle = false;
-    ball->active = true;
-    
-    game.setBallCount(1); // Reset ball count
+    // spawn a ball
+    spawnBall();
 
     // load level
     bricks = loadLevel("assets/grid.txt", 50.0f, 50.0f);
     std::cout << "Loaded " << bricks.size() << " bricks." << std::endl;
     
     // init UI font
-    font = game.uiFont();
+    font = Game::getInstance().uiFont();
     if (!font) {
         SDL_Log("Failed to load font for State_Play");
     }
@@ -53,8 +48,14 @@ void State_Play::handleInput(Game &game, const SDL_Event &event) {
                 game.pushState(std::make_unique<State_Pause>());
                 break;
             case SDL_SCANCODE_SPACE:
-                // Detach the ball from the paddle if it's stuck
-                if (ball->stuckToPaddle) ball->stuckToPaddle = false;
+                // Detach all balls from the paddle
+                for (auto& ball : balls) {
+                    if (ball->stuckToPaddle) {
+                        ball->stuckToPaddle = false;
+                        // Give the ball an initial upward velocity
+                        ball->velocity = {0.0f, -300.0f};
+                    }
+                }
                 break;
                 // TODO: Improove paddle smothness
             default:
@@ -69,13 +70,26 @@ void State_Play::update(Game &game, float dt) {
     
     // Update paddle, ball etc.
     if (paddle && paddle->active) paddle->update(dt);
-    if (ball && ball->active) ball->update(dt);
+    for (auto& ball : balls) {
+        if (ball && ball->active) ball->update(dt);
+    }
     for (auto& powerUp : powerUps) {
-        if (powerUp->active) powerUp->update(dt);
+        if (powerUp && powerUp->active) powerUp->update(dt);
     }
 
     // cleanup inactive entities
-    if (ball && ball->toBeDestroyed) ball.reset();
+    for (auto& ball : balls) {
+        if (ball && ball->toBeDestroyed) {
+            ball.reset();
+            if (game.getBallCount() <= 0) {
+                // Game Over
+                game.changeState(std::make_unique<State_GameOver>());
+            }
+        }
+    }// flush destroyed entities
+    balls.erase(std::remove_if(balls.begin(), balls.end(),
+                               [](auto& b){
+                                   return b == nullptr; }), balls.end());
     if (paddle && paddle->toBeDestroyed) paddle.reset();
     bricks.erase(std::remove_if(bricks.begin(), bricks.end(),
                                 [](auto& b){
@@ -86,7 +100,11 @@ void State_Play::update(Game &game, float dt) {
     
     // Win Condition
     if (bricks.empty()) {
-        if (ball) ball->velocity = {0.f, 0.f};
+        for (auto& ball : balls) {
+            // set ball velocity to zero and deactivate
+            if (ball && ball->active) 
+                ball->velocity = {0.0f, 0.0f};
+        }
         // TODO: Winning condition, go to next level
     }
 }
@@ -114,7 +132,9 @@ void State_Play::render(Game &game) {
         if (brick->active) brick->render(renderer);
     }
     // ball
-    if (ball && ball->active) ball->render(renderer);
+    for (auto& ball : balls) {
+        if (ball && ball->active) ball->render(renderer);
+    }
     // paddle
     if (paddle && paddle->active) paddle->render(renderer);
     
@@ -123,7 +143,9 @@ void State_Play::render(Game &game) {
 std::vector<Entity *> State_Play::getEntities() {
     std::vector<Entity*> entities;
     if (paddle && paddle->active) entities.push_back(paddle.get());
-    if (ball && ball->active) entities.push_back(ball.get());
+    for (auto& ball : balls) {
+        if (ball && ball->active) entities.push_back(ball.get());
+    }
     for (auto& brick : bricks) {
         if (brick->active) {
             entities.push_back(brick.get());
@@ -140,12 +162,11 @@ std::vector<Entity *> State_Play::getEntities() {
 
 bool State_Play::destroyEntity(Entity *e) {
     if (e == (paddle ? paddle.get() : nullptr)) { paddle.reset(); return true; }
-    if (e == (ball   ? ball.get()   : nullptr)) { ball.reset();   return true; }
+    for (auto it = balls.begin(); it != balls.end(); ++it) {
+        if (e == it->get()) { balls.erase(it); return true; }
+    }
     for (auto it = bricks.begin(); it != bricks.end(); ++it) {
-        if (e == it->get()) {
-            bricks.erase(it);
-            return true;
-        }
+        if (e == it->get()) { bricks.erase(it); return true; }
     }
     SDL_Log("State_Play::destroyEntity: Entity not found.");
     return false;
@@ -199,4 +220,20 @@ std::unique_ptr<Entity_PowerUp>
     powerUp->position = position - powerUp->size / 2.0f; // center the power-up
     powerUps.push_back(std::move(powerUp));
     return powerUp;
+}
+
+std::unique_ptr<Entity_Ball> 
+        State_Play::spawnBall() {
+    auto ball = std::make_unique<Entity_Ball>();
+    ball->position = {
+            paddle->position.x + (paddle->size.x - ball->Size()) / 2.0f,
+            paddle->position.y - ball->Size() - 1.0f
+    };
+    ball->attachTo(*paddle);
+    ball->stuckToPaddle = false;
+    ball->active = true;
+
+    balls.push_back(std::move(ball));
+    Game::getInstance().setBallCount(static_cast<int>(balls.size()));
+    return ball;
 }
