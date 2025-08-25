@@ -11,7 +11,6 @@
 #include "Game.hpp"
 #include <SDL.h>
 
-
 class Entity_Ball : public Entity {
 public:
     Entity_Ball();
@@ -21,7 +20,7 @@ public:
     bool stuckToPaddle{false};   // ball starts stuck to paddle
     void attachTo(Entity_Paddle& p);
     void update(float dt) override;
-    void render(SDL_Renderer* r) override;
+    void render(SDL_Renderer* renderer) override;
     void onCollision(Entity& other) override;
 
     glm::vec2 velocity{300.0f, -300.0f};
@@ -30,12 +29,13 @@ public:
     [[nodiscard]] float Size() const { return radius * 2.0f; } // diameter
     
     State* setCurrentState(State* s) { currentState = s; return currentState; }
+
+    TextureUPtr texture;
     
 private:
     float radius = 10.0f; // default radius
     float maxSpeed = 500.0f;
     glm::vec2 normal{}; // collision normal
-    SDL_Texture* MakeCircleTexture(SDL_Renderer* r, int diameter);
     Game& game = Game::getInstance();
     State* currentState{};
     Entity_Paddle* paddle{nullptr}; // reference to paddle for collision

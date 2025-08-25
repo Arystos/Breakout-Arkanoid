@@ -14,10 +14,9 @@ enum class BrickType {
 
 class Entity_Brick : public Entity {
 public:
-    // Costructor
     Entity_Brick();
-    // destructor
-    ~Entity_Brick() override;
+    ~Entity_Brick() override = default;
+    
     int health;
     BrickType type;
     bool dropPowerUp{false};

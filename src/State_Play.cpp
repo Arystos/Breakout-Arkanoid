@@ -65,11 +65,14 @@ void State_Play::handleInput(Game &game, const SDL_Event &event) {
 
 void State_Play::update(Game &game, float dt) {
     (void)game; (void)dt; // Avoid unused parameter warnings
-    deltaTime = dt;
+    //deltaTime = dt;
     
     // Update paddle, ball etc.
     if (paddle && paddle->active) paddle->update(dt);
     if (ball && ball->active) ball->update(dt);
+    for (auto& powerUp : powerUps) {
+        if (powerUp->active) powerUp->update(dt);
+    }
 
     // cleanup inactive entities
     if (ball && ball->toBeDestroyed) ball.reset();
@@ -77,6 +80,10 @@ void State_Play::update(Game &game, float dt) {
     bricks.erase(std::remove_if(bricks.begin(), bricks.end(),
                                 [](auto& b){
         return !b->active; }), bricks.end());
+    powerUps.erase(std::remove_if(powerUps.begin(), powerUps.end(),
+                                  [](auto& p){
+        return !p->active; }), powerUps.end());
+    
     // Win Condition
     if (bricks.empty()) {
         if (ball) ball->velocity = {0.f, 0.f};
@@ -86,21 +93,30 @@ void State_Play::update(Game &game, float dt) {
 
 void State_Play::render(Game &game) {
     SDL_Renderer* renderer = game.getRenderer();
+    
     // TODO: placeholder: draw a playfield box
     SDL_Rect box{40, 40, game.Width() - 80, game.Height() - 80 };
     SDL_SetRenderDrawColor(renderer, 60, 60, 60, 255);
     SDL_RenderDrawRect(renderer, &box);
     
-    // render paddle, ball, bricks etc.
-    if (paddle && paddle->active) paddle->render(renderer);
-    if (ball && ball->active) ball->render(renderer);
+    // win screen
+    if (bricks.empty()) {
+        UI::DrawLabel(renderer, winTitle);
+        return; // skip rendering other entities
+    }
+
+    // power-ups
+    for (auto& powerUp : powerUps) {
+        if (powerUp->active) powerUp->render(renderer);
+    }
+    // bricks
     for (auto& brick : bricks) {
         if (brick->active) brick->render(renderer);
     }
-    
-    if (bricks.empty()) {
-        UI::DrawLabel(renderer, winTitle);
-    }
+    // ball
+    if (ball && ball->active) ball->render(renderer);
+    // paddle
+    if (paddle && paddle->active) paddle->render(renderer);
     
 }
 
@@ -113,6 +129,12 @@ std::vector<Entity *> State_Play::getEntities() {
             entities.push_back(brick.get());
         }
     }
+    for (auto& powerUp : powerUps) {
+        if (powerUp->active) {
+            entities.push_back(powerUp.get());
+        }
+    }
+    
     return entities;
 }
 
@@ -129,7 +151,6 @@ bool State_Play::destroyEntity(Entity *e) {
     return false;
 }
 
-// TODO: check why bricks destroyer is called at 
 std::vector<std::unique_ptr<Entity_Brick>>
 State_Play::loadLevel(const std::string &file, float offsetX, float offsetY) {
     std::vector<std::unique_ptr<Entity_Brick>> bricks;
@@ -156,16 +177,26 @@ State_Play::loadLevel(const std::string &file, float offsetX, float offsetY) {
                      (val == 3) ? BrickType::Indestructible :
                                   BrickType::Mystery;
             brick.health = (brick.type == BrickType::Strong) ? 2 : 1;
-            brick.active = (brick.type != BrickType::Mystery); // Mystery bricks inactive at start
+            brick.dropPowerUp = (brick.type == BrickType::Mystery);
             brick.setColor();
             
             col++;
         }
         row++;
     }
+    
     return bricks;
 }
 
 void State_Play::onExit(Game &game) {
     State::onExit(game);
+}
+
+std::unique_ptr<Entity_PowerUp> 
+        State_Play::spawnPowerUp(const glm::vec2 &position) {
+    // Create a new power-up entity at the given position
+    auto powerUp = std::make_unique<Entity_PowerUp>();
+    powerUp->position = position - powerUp->size / 2.0f; // center the power-up
+    powerUps.push_back(std::move(powerUp));
+    return powerUp;
 }

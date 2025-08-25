@@ -11,6 +11,7 @@
 #include "Entity_Ball.hpp"
 #include "Entity_Brick.hpp"
 #include "UI.hpp"
+#include "Entity_PowerUp.hpp"
 #include <memory>
 
 class State_Play: public State {
@@ -28,7 +29,9 @@ public:
     std::vector<Entity*> getEntities() override;
     inline int getBrickCount() const { return static_cast<int>(bricks.size()); }
     bool destroyEntity(Entity* e); // remove entity from the state
-    static std::vector<std::unique_ptr<Entity_Brick>> loadLevel (const std::string& file, float offsetX, float offsetY); 
+    static std::vector<std::unique_ptr<Entity_Brick>> loadLevel (const std::string& file, float offsetX, float offsetY);
+
+    std::unique_ptr<Entity_PowerUp> spawnPowerUp(const glm::vec2 &position);
 
 private:
     bool paused = false; // Flag to check if the game is paused
@@ -39,7 +42,8 @@ private:
 
     std::unique_ptr<Entity_Paddle> paddle = std::make_unique<Entity_Paddle>();
     std::unique_ptr<Entity_Ball> ball = std::make_unique<Entity_Ball>();
-    std::vector<std::unique_ptr<Entity_Brick>> bricks;
+    std::vector<std::unique_ptr<Entity_Brick>> bricks = {};
+    std::vector<std::unique_ptr<Entity_PowerUp>> powerUps = {};
     
     // Text rendering
     TTF_Font* font = nullptr;
@@ -56,7 +60,7 @@ private:
     // Cache colors
     // white
     SDL_Color titleColor{240, 240, 240, 255};
-    
+
 };
 
 

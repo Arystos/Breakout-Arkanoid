@@ -5,31 +5,29 @@
 #ifndef BREAKOUT_ENTITY_POWERUP_HPP
 #define BREAKOUT_ENTITY_POWERUP_HPP
 
-#include <SDL.h>
 #include "Entity.hpp"
 #include "Game.hpp"
 
 enum class PowerUpType { 
     ExpandPaddle, ShrinkPaddle, MultiBall, SlowBall, FastBall,
-    StickyPaddle, Laser, ExtraLife 
+    StickyPaddle, Laser, ExtraLife, Count
 };
 
 class Game;
 
 class Entity_PowerUp : public Entity {
 public:
+    Entity_PowerUp();
     PowerUpType type;
     float fallSpeed{150.0f};
-    void update(float dt) override {
-        position.y += fallSpeed * dt;
-        if (position.y > Game().Height()) {
-            active = false; // deactivate if it falls off screen
-        }
-    }
-    void render(SDL_Renderer* r) override {
-        // draw icon based on type
-    }
+    void update(float dt) override;
+    void render(SDL_Renderer* renderer) override;
+    void onCollision(Entity& other) override;
     
+private:
+    TextureUPtr texture;
+    Game& game = Game::getInstance();
+
 };
 
 

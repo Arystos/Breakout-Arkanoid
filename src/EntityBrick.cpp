@@ -22,20 +22,19 @@ Entity_Brick::Entity_Brick() {
 }
 
 void Entity_Brick::render(SDL_Renderer *r) {
+    // se color è float 0..1
+    auto to8 = [](float v){ return static_cast<Uint8>(std::clamp(v, 0.0f, 1.0f) * 255.0f); };
+
     SDL_Rect rect{
             static_cast<int>(position.x),
             static_cast<int>(position.y),
-            static_cast<int>(size.x),
-            static_cast<int>(size.y)
+            std::max(1, static_cast<int>(size.x)),
+            std::max(1, static_cast<int>(size.y))
     };
-    SDL_SetRenderDrawColor(r, color.r, color.g, color.b, color.a);
+
+    SDL_SetRenderDrawBlendMode(r, SDL_BLENDMODE_NONE); // evita alpha se non vuoi blending
+    SDL_SetRenderDrawColor(r, to8(color.r), to8(color.g), to8(color.b), to8(color.a));
     SDL_RenderFillRect(r, &rect);
-    
-    // TODO: Proper rendering with textures
-    /*
-    SDL_Rect rect{(int)position.x, (int)position.y, (int)size.x, (int)size.y};
-    SDL_RenderCopy(r, textureForType(type), nullptr, &rect);
-     */
 }
 
 SDL_Texture *Entity_Brick::textureForType(BrickType t) {
@@ -52,6 +51,18 @@ void Entity_Brick::onCollision(Entity &other) {
     if (type != BrickType::Indestructible) { 
         health--; 
         active = health > 0;
+    }
+    if (type == BrickType::Strong) {
+        // change color to green
+        color = {0, 255, 0, 255};
+    }
+    if (type == BrickType::Mystery) {
+        dropPowerUp = true;
+        // In a real game, you would spawn a power-up entity here
+        if (auto* playState = dynamic_cast<State_Play*>(Game::getInstance().getCurrentState())) {
+            playState->spawnPowerUp(position + size / 2.0f);
+            dropPowerUp = false; // reset flag after dropping
+        }
     }
 }
 
@@ -74,19 +85,3 @@ void Entity_Brick::setColor() {
             break;
     }
 }
-
-Entity_Brick::~Entity_Brick() = default;
-
-/*
-Entity_Brick::~Entity_Brick() {
-    Game& game = Game::getInstance();
-    // get game state
-    State* currentState = game.getCurrentState();
-    if (auto *playState = dynamic_cast<State_Play*>(currentState)) {
-        if (playState->getBrickCount() == 1) {
-            // TODO: Level complete, last brick destroyed
-            playState->getBall().velocity = {0.0f, 0.0f};
-        }
-    }
-}
- */
