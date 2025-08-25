@@ -22,7 +22,7 @@ struct Entity {
     bool toBeDestroyed{false};
     SDL_Texture *texture{nullptr}; // texture for rendering
     virtual void update(float dt) {}
-    virtual void render(SDL_Renderer* r);
+    virtual void render(SDL_Renderer* r) {};
     virtual void onCollision(Entity& other) {}
     virtual ~Entity() = default;
 
@@ -44,14 +44,8 @@ struct Entity {
     
     Color color{255, 255, 255, 255}; // default white color
 
-    const SDL_FRect &getRect() {
-        // return SDL_FRect{position.x, position.y, size.x, size.y};
-        static SDL_FRect rect;
-        rect.x = position.x;
-        rect.y = position.y;
-        rect.w = size.x;
-        rect.h = size.y;
-        return rect;
+    SDL_FRect getRect() const {                // ritorna per valore, non reference a static
+        return SDL_FRect{ position.x, position.y, size.x, size.y };
     }
 };
 

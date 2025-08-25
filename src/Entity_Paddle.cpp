@@ -4,6 +4,7 @@
 
 #include "Entity_Paddle.hpp"
 #include "Game.hpp"
+#include "Entity_PowerUp.hpp"
 
 // constructor
 Entity_Paddle::Entity_Paddle() {
@@ -22,6 +23,7 @@ Entity_Paddle::Entity_Paddle() {
 }
 
 
+/*
 void Entity::render(SDL_Renderer *r) {
     // Print debug information
     SDL_Log("Rendering Paddle");
@@ -35,6 +37,7 @@ void Entity::render(SDL_Renderer *r) {
         SDL_RenderFillRect(r, &rect);
     }
 }
+ */
 
 void Entity_Paddle::render(SDL_Renderer *r) {
     if (texture == nullptr) {
@@ -98,4 +101,38 @@ void Entity_Paddle::move(float dir, float deltaTime) {
 
     prevX = position.x;
     
+}
+
+void Entity_Paddle::onCollision(Entity &other) {
+    if (auto* powerUp = dynamic_cast<Entity_PowerUp*>(&other)) {
+        switch (powerUp->type) {
+            case PowerUpType::MultiBall:
+            //TODO: spawn another ball
+                break;
+            case PowerUpType::ExpandPaddle:
+                size.x *= 1.25f; // expand paddle size
+                std::cout << "Paddle expanded" << std::endl;
+                break;
+            case PowerUpType::ShrinkPaddle:
+                size.x *= 0.75f; // shrink paddle size
+                std::cout << "Paddle shrunk" << std::endl;
+                break;
+            case PowerUpType::SlowBall:
+                // TODO: slow down ball speed
+                break;
+            case PowerUpType::FastBall:
+                // TODO: speed up ball speed
+                break;
+            case PowerUpType::StickyPaddle:
+                sticky = true;
+                break;
+            case PowerUpType::Laser:
+                // TODO: enable laser shooting
+                break;
+            case PowerUpType::ExtraLife:
+                break;
+            default:
+                break;
+        }
+    }
 }

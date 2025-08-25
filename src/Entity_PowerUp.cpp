@@ -3,6 +3,8 @@
 //
 
 #include "Entity_PowerUp.hpp"
+#include "Entity_Paddle.hpp"
+#include "Physics.hpp"
 #include <random>
 
 Entity_PowerUp::Entity_PowerUp() {
@@ -10,7 +12,7 @@ Entity_PowerUp::Entity_PowerUp() {
     size = {20.0f, 20.0f};
     // Randomly assign a power-up type
     static std::mt19937 rng{std::random_device{}()};
-    std::uniform_int_distribution<int> dist(0, static_cast<int>(PowerUpType::Count) - 1);
+    std::uniform_int_distribution<int> dist(0, static_cast<int>(PowerUpType::Count) - 7);
     type = static_cast<PowerUpType>(dist(rng));
     std::cout << "PowerUp created with type " << static_cast<int>(type) << std::endl;
 }
@@ -23,6 +25,19 @@ void Entity_PowerUp::update(float dt) {
         toBeDestroyed = true;
         return;
     }
+    
+    // check collision with paddle
+    for (Entity* entity : game.getCurrentState()->getEntities()) {
+        if (!entity || entity == this || !entity->active) continue;
+        if (auto *paddle = dynamic_cast<Entity_Paddle *>(entity)) {
+            glm::vec2 normal;
+            if (Physics::circleVsAABB({position.x + size.x / 2, position.y + size.y / 2}, size.x / 2,
+                                      paddle->getRect(), normal)) {
+                onCollision(*paddle);
+                break;
+            }
+        }
+    }
         
 }
 
@@ -34,7 +49,7 @@ void Entity_PowerUp::render(SDL_Renderer *renderer) {
     if (!texture) {
         texture = MakeCircleTexture(renderer, (int)(size.x));
         SDL_SetTextureColorMod(texture.get(), 255, 255, 0); // Yellow color for power-ups
-        SDL_SetTextureAlphaMod(texture.get(), 400); // Slightly transparent
+        //SDL_SetTextureAlphaMod(texture.get(), 400); // Slightly transparent
     }
         
     else
@@ -43,5 +58,11 @@ void Entity_PowerUp::render(SDL_Renderer *renderer) {
 }
 
 void Entity_PowerUp::onCollision(Entity &other) {
-    Entity::onCollision(other);
+    // dynamic_cast to paddle
+    if (auto* paddle = dynamic_cast<Entity_Paddle*>(&other)) {
+        // TODO: Apply the power-up effect based on its type
+        paddle->onCollision(*this);
+        active = false;
+        toBeDestroyed = true;
+    }
 }

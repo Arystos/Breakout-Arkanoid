@@ -19,6 +19,7 @@ public:
     void update(float dt) override;
     void render(SDL_Renderer* r) override;
     void move (float dir, float deltaTime);
+    void onCollision(Entity& other) override;
 
     [[nodiscard]] glm::vec2 getVelocity() const { return velocity; }
     float getSpeedX() const { return velocity.x; }
