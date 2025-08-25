@@ -3,6 +3,7 @@
 //
 
 #include "Physics.hpp"
+#include <algorithm>
 
 bool Physics::circleVsAABB(const glm::vec2& center, float radius,
                            const SDL_FRect& box, glm::vec2& hitNormal)

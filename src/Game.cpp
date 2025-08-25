@@ -10,7 +10,14 @@ Game::Game() = default;
 Game::~Game() {
     states.clear(); // Clear all states
     if (uiFont_) TTF_CloseFont(uiFont_); uiFont_ = nullptr;
-    if (renderer) SDL_DestroyRenderer(renderer); renderer = nullptr;
+    if (renderer) {
+        SDL_SetRenderTarget(renderer, nullptr); // reset target se ne avevi uno
+        SDL_RenderFlush(renderer);              // svuota la coda
+        SDL_RenderPresent(renderer);            // opzionale, chiude il frame
+        SDL_DestroyRenderer(renderer);
+        renderer = nullptr;
+    }
+
     if (window) SDL_DestroyWindow(window); window = nullptr;
     TTF_Quit();
     SDL_Quit();

@@ -1,6 +1,17 @@
 # Breakout-Arkanoid
 An arcade game in C++
 
+# Installation
+
+On windows you can use vcpkg to install the dependencies:
+Double click on the `install_dependencies.bat` file to install the dependencies.
+
+After run this command int the terminal
+```bash
+rm -r -Force build
+>> cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE="$PWD/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows
+>> cmake --build build --config Debugvcpkg integrate install
+
 ## Project structure:
 ```
 breakout/

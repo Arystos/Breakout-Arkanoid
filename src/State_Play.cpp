@@ -81,15 +81,18 @@ void State_Play::update(Game &game, float dt) {
     for (auto& ball : balls) {
         if (ball && ball->toBeDestroyed) {
             ball.reset();
-            if (game.getBallCount() <= 0) {
-                // Game Over
-                game.changeState(std::make_unique<State_GameOver>());
-            }
         }
-    }// flush destroyed entities
+    }
+    // flush destroyed entities
     balls.erase(std::remove_if(balls.begin(), balls.end(),
                                [](auto& b){
                                    return b == nullptr; }), balls.end());
+
+    if (game.getBallCount() <= 0) {
+        // Game Over
+        game.changeState(std::make_unique<State_GameOver>());
+    }
+                                   
     if (paddle && paddle->toBeDestroyed) paddle.reset();
     bricks.erase(std::remove_if(bricks.begin(), bricks.end(),
                                 [](auto& b){

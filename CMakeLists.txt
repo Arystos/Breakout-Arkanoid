@@ -4,6 +4,8 @@ project(Breakout)
 set(ASSETS_DIR ${CMAKE_SOURCE_DIR}/assets)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 set(BREAKOUT_SRC
         src/main.cpp
         src/Game.cpp
@@ -34,14 +36,33 @@ add_custom_command(TARGET breakout POST_BUILD
         $<TARGET_FILE_DIR:breakout>/assets
 )
 
-find_package(SDL2 REQUIRED)
-find_package(SDL2_ttf REQUIRED)   # <-- aggiunto
-find_package(glm CONFIG REQUIRED)
 
-target_include_directories(breakout PRIVATE include)
+# === Non-Windows: mantieni la logica attuale ===
+if(NOT WIN32)
+    find_package(SDL2 REQUIRED)
+    find_package(SDL2_ttf REQUIRED)
+    find_package(glm CONFIG REQUIRED)
 
-target_link_libraries(breakout PRIVATE
-        SDL2::SDL2
-        SDL2_ttf::SDL2_ttf   # <-- aggiunto
-        glm::glm-header-only
-)
+    target_include_directories(breakout PRIVATE include)
+
+    target_link_libraries(breakout PRIVATE
+            SDL2::SDL2
+            SDL2_ttf::SDL2_ttf
+            glm::glm-header-only
+    )
+else()
+    # === Windows: usa pacchetti vcpkg e aggiungi SDL2main ===
+    # Richiede la toolchain passata da setup_deps.bat:
+    #   -DCMAKE_TOOLCHAIN_FILE="%PROJECT_DIR%/vcpkg/scripts/buildsystems/vcpkg.cmake"
+    add_definitions(-DNOMINMAX -D_CRT_SECURE_NO_WARNINGS)
+    # Se nel tuo main usi int main(int, char**), spesso serve SDL2main su Windows
+    find_package(SDL2 CONFIG REQUIRED)
+    find_package(SDL2_ttf CONFIG REQUIRED)
+    find_package(glm CONFIG REQUIRED)
+
+    target_include_directories(breakout PRIVATE include)
+
+    # glm su vcpkg espone sia glm::glm che glm::glm-header-only, usane uno qualsiasi
+    target_link_libraries(breakout PRIVATE SDL2::SDL2 SDL2_ttf::SDL2_ttf glm::glm)
+
+endif()

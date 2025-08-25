@@ -70,3 +70,6 @@ Thumbs.db
 # ---- Other ----
 *.manifest
 *.tlog
+
+# ---- vcpkg ----
+vcpkg/

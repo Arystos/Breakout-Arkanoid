@@ -6,6 +6,7 @@
 #include "Game.hpp"
 #include "Entity_PowerUp.hpp"
 #include "StatePlay.hpp"
+#include <algorithm>
 
 // constructor
 Entity_Paddle::Entity_Paddle() {
@@ -57,10 +58,10 @@ void Entity_Paddle::update(float dt) {
     // paddle movement
     const Uint8 *state = SDL_GetKeyboardState(nullptr);
     float dir = 0.0f;
-    if (state[SDL_SCANCODE_LEFT] or state[SDL_SCANCODE_A]) {
+    if (state[SDL_SCANCODE_LEFT] || state[SDL_SCANCODE_A]) {
         dir = -1.0f; // Move left
         move(dir, dt);
-    } else if (state[SDL_SCANCODE_RIGHT] or state[SDL_SCANCODE_D]) {
+    } else if (state[SDL_SCANCODE_RIGHT] || state[SDL_SCANCODE_D]) {
         dir = 1.0f; // Move right
         move(dir, dt);
     } else {

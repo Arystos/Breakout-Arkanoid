@@ -5,6 +5,7 @@
 #include "Entity_Brick.hpp"
 #include "Game.hpp"
 #include "StatePlay.hpp"
+#include <algorithm>
 
 Entity_Brick::Entity_Brick() {
     size = {60.0f, 20.0f};
