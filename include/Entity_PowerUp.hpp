@@ -23,7 +23,9 @@ public:
     void update(float dt) override;
     void render(SDL_Renderer* renderer) override;
     void onCollision(Entity& other) override;
-    
+
+    const std::string &typeToString();
+
 private:
     TextureUPtr texture;
     Game& game = Game::getInstance();

@@ -19,6 +19,7 @@ namespace UI {
         SDL_Color color{255,255,255,255};
         TTF_Font* font = nullptr;
         AlignH align = AlignH::Left;
+        bool visible;
     };
 
     // Stato visuale del pulsante

@@ -188,6 +188,21 @@ void Entity_Paddle::onCollision(Entity &other) {
             default:
                 break;
         }
+        //Set the power-up label text
+        if (auto* playState = dynamic_cast<State_Play*>(Game::getInstance().getCurrentState())) {
+            playState->SetPowerUpLabelText(powerUp->typeToString());
+            playState->SetPowerUpLabelVisible(true);
+            // stop if any previous timer is running
+            Game::getInstance().timerManager.stopByTag("powerup_label", {});
+            // Start a timer to hide the label after a short duration
+            uint64_t t = Game::getInstance().timerManager.create(
+                    powerUpDuration, false, "powerup_label", {},
+                    [this](auto &&tag) {
+                        onPowerUpCollectedTimerEnd(std::forward<decltype(tag)>(tag));
+                    }
+            );
+            t = t; // avoid unused variable warning
+        }
     }
 }
 
@@ -228,4 +243,12 @@ void Entity_Paddle::onBallFastTimerEnd(uint64_t id) {
             ball->setMaxSpeed(ball->MaxSpeed() / ballSpeedModifier); // restore speed
             ball->velocity /= ballSpeedModifier;
         }
+}
+
+void Entity_Paddle::onPowerUpCollectedTimerEnd(uint64_t id) {
+    (void)id;
+    // Hide power-up label
+    if (auto* playState = dynamic_cast<State_Play*>(Game::getInstance().getCurrentState())) {
+        playState->SetPowerUpLabelVisible(false);
+    }
 }

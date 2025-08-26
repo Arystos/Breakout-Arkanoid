@@ -14,6 +14,10 @@ class TimerManager {
 public:
     uint64_t create(float duration, bool repeat = false, const std::string& tag = {},
                     std::any payload = {}, Timer::EndCallback onEnd = nullptr);
+    // Simple delay (no tag, no payload, no callback)
+    uint64_t  delay(float duration) {
+        return create(duration, false, "delay", {}, nullptr);
+    }
 
     void update(float dt);
     bool stop(uint64_t id);

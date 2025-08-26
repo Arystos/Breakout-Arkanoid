@@ -14,8 +14,8 @@ Entity_PowerUp::Entity_PowerUp() {
     static std::mt19937 rng{std::random_device{}()}; //generate random seed
     std::uniform_int_distribution<int> dist(0, static_cast<int>(PowerUpType::Count) - 1);
     type = static_cast<PowerUpType>(dist(rng));
-    //type = static_cast<PowerUpType>(5);
-    std::cout << "PowerUp created with type " << static_cast<int>(type) << std::endl;
+    //type = static_cast<PowerUpType>(5); // for testing
+    std::cout << "PowerUp created with type " << static_cast<int>(type) << std::endl; // debug
 }
 
 void Entity_PowerUp::update(float dt) {
@@ -66,4 +66,14 @@ void Entity_PowerUp::onCollision(Entity &other) {
         toBeDestroyed = true;
         paddle->onCollision(*this);
     }
+}
+
+const std::string &Entity_PowerUp::typeToString() {
+    return (type == PowerUpType::ExpandPaddle) ? "Expand Paddle" :
+           (type == PowerUpType::ShrinkPaddle) ? "Shrink Paddle" :
+           (type == PowerUpType::MultiBall) ? "Multi Ball" :
+           (type == PowerUpType::SlowBall) ? "Slow Ball" :
+           (type == PowerUpType::FastBall) ? "Fast Ball" :
+           (type == PowerUpType::StickyPaddle) ? "Sticky Paddle" :
+           "Unknown";
 }

@@ -36,6 +36,12 @@ void State_Play::onEnter(Game &game) {
     winTitle.dst.h *= 2;
     winTitle.dst.x = (game.Width() - winTitle.dst.w) / 2; // center horizontally
     winTitle.dst.y = game.Height() / 3;
+    
+    UI::BuildLabel(renderer, powerUpTitle, powerUpLabel.text, font, titleColor, UI::AlignH::Center);
+    powerUpTitle.dst.w *= 1.5;
+    powerUpTitle.dst.h *= 1.5;
+    powerUpTitle.dst.x = (game.Width() - powerUpTitle.dst.w) / 2; // center horizontally
+    powerUpTitle.dst.y = game.Height() / 1.6f;
 }
 
 void State_Play::handleInput(Game &game, const SDL_Event &event) {
@@ -118,9 +124,19 @@ void State_Play::render(Game &game) {
     SDL_Rect box{40, 40, game.Width() - 80, game.Height() - 80 };
     SDL_SetRenderDrawColor(renderer, 60, 60, 60, 255);
     SDL_RenderDrawRect(renderer, &box);
+
+    // Power-up title
+    if (powerUpLabel.visible) {
+    UI::BuildLabel(renderer, powerUpTitle, powerUpLabel.text, font, titleColor, UI::AlignH::Center);
+    powerUpTitle.dst.w *= 1.5;
+    powerUpTitle.dst.h *= 1.5;
+    powerUpTitle.dst.x = (game.Width() - powerUpTitle.dst.w) / 2; // center horizontally
+    powerUpTitle.dst.y = game.Height() / 1.6f;
+    UI::DrawLabel(renderer, powerUpTitle);
+    }
     
     // win screen
-    if (bricks.empty()) {
+    if (winTitle.visible) {
         UI::DrawLabel(renderer, winTitle);
         return; // skip rendering other entities
     }

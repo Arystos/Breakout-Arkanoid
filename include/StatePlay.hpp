@@ -37,6 +37,12 @@ public:
 
     std::unique_ptr<Entity_PowerUp> spawnPowerUp(const glm::vec2 &position);
     std::unique_ptr<Entity_Ball> spawnBall();
+    
+    // get string of power-up label
+    std::string PowerUpLabelText () const { return powerUpLabel.text; }
+    void SetPowerUpLabelText (const std::string& text) { powerUpLabel.text = text; }
+    bool PowerUpLabelVisible() const { return powerUpLabel.visible; }
+    void SetPowerUpLabelVisible(bool v) { powerUpLabel.visible = v; }
 
 private:
     bool paused = false; // Flag to check if the game is paused
@@ -57,11 +63,14 @@ private:
         std::string text;
         SDL_Texture *tex = nullptr;
         SDL_Rect dst{0, 0, 0, 0};
+        bool visible{false};
     };
     Label wonLabel{"You Win!"};
+    Label powerUpLabel{"Napoli!"};
     
     // UI
     UI::Label winTitle;
+    UI::Label powerUpTitle;
     
     // Cache colors
     // white

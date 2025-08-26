@@ -30,6 +30,7 @@ public:
     void onPaddleShrinkTimerEnd(uint64_t id);
     void onBallSlowTimerEnd(uint64_t id);
     void onBallFastTimerEnd(uint64_t id);
+    void onPowerUpCollectedTimerEnd(uint64_t id);
     
 private:
     Bounds bounds{0.f, 0.f};
