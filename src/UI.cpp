@@ -1,6 +1,7 @@
 // UI.cpp
 #include "UI.hpp"
 #include <algorithm>
+#include <iostream>
 
 namespace UI {
 
@@ -41,7 +42,10 @@ namespace UI {
     bool BuildLabel(SDL_Renderer* r, Label& L, const std::string& text, TTF_Font* font, SDL_Color color, AlignH align) {
         if (!r || !font) return false;
         // Libera texture precedente se presente
-        if (L.tex) { SDL_DestroyTexture(L.tex); L.tex = nullptr; }
+        if (L.tex) { 
+            SDL_DestroyTexture(L.tex); L.tex = nullptr; 
+            std::cout << "Destroyed old label texture\n";
+        }
         L.text  = text;
         L.font  = font;
         L.color = color;

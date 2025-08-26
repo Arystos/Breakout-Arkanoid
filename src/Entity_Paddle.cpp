@@ -115,6 +115,8 @@ void Entity_Paddle::onCollision(Entity &other) {
                 break;
             case PowerUpType::ExpandPaddle: {
                 size.x *= sizeModifier; // expand paddle size
+                // move slightly to left to keep centre position
+                position.x -= (size.x * (sizeModifier - 1.0f)) / 2.0f;
                 std::cout << "Paddle expanded" << std::endl;
                 uint64_t t = Game::getInstance().timerManager.create(
                         powerUpDuration, false, "powerup_expand_paddle", {},
@@ -127,6 +129,8 @@ void Entity_Paddle::onCollision(Entity &other) {
             }
             case PowerUpType::ShrinkPaddle: {
                 size.x /= sizeModifier; // shrink paddle size
+                // move slightly to right to keep centre position
+                position.x += (size.x * (sizeModifier - 1.0f)) / 2.0f;
                 std::cout << "Paddle shrunk" << std::endl;
                 uint64_t t = Game::getInstance().timerManager.create(
                         powerUpDuration, false, "powerup_shrink_paddle", {},

@@ -54,6 +54,14 @@ void Entity_Ball::update(float dt) {
         std::cout << "Ball lost!" << std::endl;
         game.setBallCount(game.BallCount() - 1);
         toBeDestroyed = true;
+        // decrement lives and check for game over
+        if (auto* playState = dynamic_cast<State_Play*>(game.getCurrentState())){
+            // check if there are other balls still active
+            if (game.BallCount() <= 0) {
+                playState->playerLives--;
+            }
+        }
+            
         return;
     }
     

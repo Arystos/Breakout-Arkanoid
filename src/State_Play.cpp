@@ -121,11 +121,20 @@ void State_Play::update(Game &game, float dt) {
                                   [](auto& p){
         return !p->active; }), powerUps.end());
 
-    // Lost Condition
-    if (game.getBallCount() <= 0) {
-        // Game Over
+    if (playerLives <= 0) {
         game.changeState(std::make_unique<State_GameOver>());
         return;
+    }
+
+    // Lost Condition
+    if (game.getBallCount() <= 0) {
+        static float respawnTimer = 0.0f;
+        respawnTimer += dt;
+        if (respawnTimer > 2.0f) {
+            respawnTimer = 0.0f;
+            // spawn a new ball
+            spawnBall();
+        }
     }
     
     // Win Condition
@@ -181,6 +190,15 @@ void State_Play::render(Game &game) {
     powerUpTitle.dst.x = (game.Width() - powerUpTitle.dst.w) / 2; // center horizontally
     powerUpTitle.dst.y = game.Height() / 1.6f;
     UI::DrawLabel(renderer, powerUpTitle);
+    }
+    
+    if (playerLives > 0) {
+        livesLabel.text = "Lives: " + std::to_string(playerLives);
+        UI::BuildLabel(renderer, livesTitle, livesLabel.text, font, livesColor, UI::AlignH::Left);
+        // draw lives on top-left corner
+        livesTitle.dst.x = 50;
+        livesTitle.dst.y = 5;
+        UI::DrawLabel(renderer, livesTitle);
     }
 
     // power-ups

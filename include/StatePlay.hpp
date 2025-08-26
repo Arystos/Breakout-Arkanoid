@@ -44,9 +44,11 @@ public:
     bool PowerUpLabelVisible() const { return powerUpLabel.visible; }
     void SetPowerUpLabelVisible(bool v) { powerUpLabel.visible = v; }
 
+    int playerLives = 3;
 private:
     bool paused = false; // Flag to check if the game is paused
     int score = 0; // Player's score
+    // Player's lives
     float deltaTime = 0.0f; // Time since last update, used for movement calculations
     //glm::vec2 normal{}; // collision normal
     // TODO: Add paddle, ball, bricks
@@ -68,16 +70,19 @@ private:
     Label wonLabel{"Level Complete!"};
     Label powerUpLabel{"Power_Up!"};
     Label messageLabel{"Loading next level..."};
+    Label livesLabel{"Lives: 3"};
     
     // UI
     UI::Label winTitle;
     UI::Label powerUpTitle;
     UI::Label messageTitle;
+    UI::Label livesTitle;
     
     // Cache colors
     // white
     SDL_Color titleColor{240, 240, 240, 255}; // white
     SDL_Color textColor{200, 200, 200, 255}; // slightly grayer white
+    SDL_Color livesColor{255, 255, 0, 255}; // yellow
     
     struct LevelInfo {
         std::string name;
