@@ -123,17 +123,24 @@ void Entity_Paddle::onCollision(Entity &other) {
                 break;
             case PowerUpType::SlowBall:
                 // TODO: slow down ball speed
+                if (auto* playState = dynamic_cast<State_Play*>(
+                        Game::getInstance().getCurrentState()))
+                    for (auto& ball : playState->getBalls()) {
+                        ball->setMaxSpeed(ball->MaxSpeed() * 0.8f); // slow down
+                        ball->velocity *= 0.8f;
+                    }
                 break;
             case PowerUpType::FastBall:
                 // TODO: speed up ball speed
+                if (auto* playState = dynamic_cast<State_Play*>(
+                        Game::getInstance().getCurrentState()))
+                    for (auto& ball : playState->getBalls()) {
+                        ball->setMaxSpeed(ball->MaxSpeed() * 1.2f); // speed up
+                        ball->velocity *= 1.2f;
+                    }
                 break;
             case PowerUpType::StickyPaddle:
                 sticky = true;
-                break;
-            case PowerUpType::Laser:
-                // TODO: enable laser shooting
-                break;
-            case PowerUpType::ExtraLife:
                 break;
             default:
                 break;

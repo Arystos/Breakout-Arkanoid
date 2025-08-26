@@ -48,13 +48,10 @@ void State_Play::handleInput(Game &game, const SDL_Event &event) {
                 game.pushState(std::make_unique<State_Pause>());
                 break;
             case SDL_SCANCODE_SPACE:
-                game.changeState(std::make_unique<State_GameOver>());
-                // Detach all balls from the paddle
                 for (auto& ball : balls) {
                     if (ball->stuckToPaddle) {
-                        ball->stuckToPaddle = false;
-                        // Give the ball an initial upward velocity
-                        ball->velocity = {0.0f, -300.0f};
+                        ball->Release();
+                        break; // release only one ball
                     }
                 }
                 break;
@@ -235,7 +232,7 @@ std::unique_ptr<Entity_Ball>
             paddle->position.x + (paddle->size.x - ball->Size()) / 2.0f,
             paddle->position.y - ball->Size() - 1.0f
     };
-    ball->attachTo(*paddle);
+    ball->attachToCentre(*paddle);
     ball->stuckToPaddle = false;
     ball->active = true;
 

@@ -23,7 +23,7 @@ public:
 
     [[nodiscard]] glm::vec2 getVelocity() const { return velocity; }
     float getSpeedX() const { return velocity.x; }
-    int getMoveSign() const { return moveSign; } // -1, 0, +1
+    int MoveSign() const { return moveSign; } // -1, 0, +1
     
 private:
     Bounds bounds{0.f, 0.f};

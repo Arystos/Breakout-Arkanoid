@@ -10,7 +10,7 @@
 
 enum class PowerUpType { 
     ExpandPaddle, ShrinkPaddle, MultiBall, SlowBall, FastBall,
-    StickyPaddle, Laser, ExtraLife, Count
+    StickyPaddle, Count
 };
 
 class Game;

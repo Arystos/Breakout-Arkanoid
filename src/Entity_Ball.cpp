@@ -17,7 +17,7 @@ Entity_Ball::Entity_Ball() {
     active = false;
 }
 
-void Entity_Ball::attachTo(Entity_Paddle &p) {
+void Entity_Ball::attachToCentre(Entity_Paddle &p) {
     paddle = &p; // keep reference to paddle
     stuckToPaddle = true;
     position.x = p.position.x + p.size.x / 2 - radius;
@@ -30,6 +30,14 @@ void Entity_Ball::update(float dt) {
     if (!stuckToPaddle) {
         position.x += velocity.x * dt;
         position.y += velocity.y * dt;
+    } else if (paddle) {
+        position = paddle->position + stickOffset;
+        position.y = paddle->position.y - 2 * radius; // stay above the paddle
+        // Edge clamping
+        if (position.x + radius < paddle->position.x)
+            position.x = paddle->position.x - radius + 10.0f; // clamp to left edge
+        else if (position.x + radius > paddle->position.x + paddle->size.x)
+            position.x = paddle->position.x + paddle->size.x - radius - 10.0f; // clamp to right edge
     }
     
     // If the ball hits the screen borders bounce it back
@@ -83,11 +91,8 @@ void Entity_Ball::onCollision(Entity &entity) {
     
 #pragma region Paddle Collision
     if (auto* paddle_ = dynamic_cast<Entity_Paddle*>(&entity)) {
-        if (stickyMode) {
-            stuckToPaddle = true;
-            position.x = paddle_->position.x + paddle_->size.x / 2 - radius;
-            position.y = paddle_->position.y - 2 * radius;
-            velocity = {0.0f, 0.0f};
+        if (paddle_->sticky && !stuckToPaddle) {
+            StickTo(*paddle_);
             return;
         }
 
@@ -141,6 +146,22 @@ void Entity_Ball::onCollision(Entity &entity) {
     }
 #pragma endregion
     
+}
+
+void Entity_Ball::StickTo(Entity_Paddle& p) {
+    paddle = &p;
+    stuckToPaddle = true;
+    // print centre of the paddle
+    std::cout << "Paddle centre: " << (p.position.x + p.size.x / 2) << std::endl;
+    stickOffset = position - p.position; // top-left vs top-left
+    std::cout << "Ball stuck to paddle at offset: (" 
+              << stickOffset.x << ", " << stickOffset.y << ")" << std::endl;
+}
+
+void Entity_Ball::Release() {
+    if (!stuckToPaddle) return;
+    stuckToPaddle = false;
+    velocity = {paddle ? paddle->getVelocity().x * 0.5f : 0.0f, -300.0f};
 }
 
 // destructor 
