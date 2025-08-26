@@ -10,9 +10,13 @@
 #include "Entity_Paddle.hpp"
 #include "Entity_Ball.hpp"
 #include "Entity_Brick.hpp"
-#include "UI.hpp"
 #include "Entity_PowerUp.hpp"
+#include "UI.hpp"
 #include <memory>
+
+enum class EffectType {
+    ExpandPaddle, ShrinkPaddle, StickyPaddle, FastBall, SlowBall
+};
 
 class State_Play: public State {
 public:

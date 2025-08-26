@@ -8,6 +8,8 @@
 #include <iostream>
 #include "State.hpp"
 #include "UI.hpp"
+#include "Timer.hpp"
+#include "TimerManager.hpp"
 
 
 //class State; // Forward declaration
@@ -46,7 +48,33 @@ public:
     int BallCount() const { return ballCount; }
     int getBallCount() const { return ballCount; }
     int setBallCount(int count) { ballCount = count; return ballCount; }
+
+    /*
+#pragma region Timer Management
+    Uint32 last = SDL_GetTicks();
+    std::vector<Timer> timers;
+    Timer& createTimer() {
+        timers.emplace_back();
+        return timers.back();
+    }
     
+    // Update all timers
+    void updateTimers(float dt) {
+        for (auto& timer : timers) {
+            timer.update(dt);
+        }
+        // cleanup stopped timers
+        timers.erase(std::remove_if(timers.begin(), timers.end(),
+                                    [](const Timer &t) { return !t.isRunning(); }), timers.end());
+    }
+    
+    
+    
+#pragma endregion
+     */
+
+    TimerManager timerManager;
+
 
 private:
     SDL_Window* window = nullptr;

@@ -25,12 +25,24 @@ public:
     float getSpeedX() const { return velocity.x; }
     int MoveSign() const { return moveSign; } // -1, 0, +1
     
+    void onStickyTimerEnd(uint64_t id);
+    void onPaddleGrowTimerEnd(uint64_t id);
+    void onPaddleShrinkTimerEnd(uint64_t id);
+    void onBallSlowTimerEnd(uint64_t id);
+    void onBallFastTimerEnd(uint64_t id);
+    
 private:
     Bounds bounds{0.f, 0.f};
     float speed {500.0f}; // default speed (pixels per second)
     float prevX{0.f};
     glm::vec2 velocity{0.f, 0.f};
     int moveSign{0}; // -1 left, +1 right, 0 none
+    
+    float sizeModifier{1.25f};
+    float ballSpeedModifier{1.2f};
+    
+    // time for power-ups
+    float powerUpDuration{3.0f};
 };
 
 

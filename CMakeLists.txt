@@ -25,6 +25,10 @@ set(BREAKOUT_SRC
         include/Physics.hpp
         src/UI.cpp
         include/UI.hpp
+        src/Timer.cpp
+        include/Timer.hpp
+        src/TimerManager.cpp
+        include/TimerManager.hpp
 )
 
 add_executable(breakout ${BREAKOUT_SRC})

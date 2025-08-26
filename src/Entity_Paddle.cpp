@@ -109,41 +109,123 @@ void Entity_Paddle::onCollision(Entity &other) {
     if (auto* powerUp = dynamic_cast<Entity_PowerUp*>(&other)) {
         switch (powerUp->type) {
             case PowerUpType::MultiBall: // spawn an extra ball
-                if (auto* playState = dynamic_cast<State_Play*>(
+                if (auto *playState = dynamic_cast<State_Play *>(
                         Game::getInstance().getCurrentState()))
                     playState->spawnBall();
                 break;
-            case PowerUpType::ExpandPaddle:
-                size.x *= 1.25f; // expand paddle size
+            case PowerUpType::ExpandPaddle: {
+                size.x *= sizeModifier; // expand paddle size
                 std::cout << "Paddle expanded" << std::endl;
+                uint64_t t = Game::getInstance().timerManager.create(
+                        powerUpDuration, false, "powerup_expand_paddle", {},
+                        [this](auto &&tag) {
+                            onPaddleGrowTimerEnd(std::forward<decltype(tag)>(tag));
+                        }
+                );
+                std::cout << "Paddle is bigger. Timer ID: " << t << "\n";
                 break;
-            case PowerUpType::ShrinkPaddle:
-                size.x *= 0.75f; // shrink paddle size
+            }
+            case PowerUpType::ShrinkPaddle: {
+                size.x /= sizeModifier; // shrink paddle size
                 std::cout << "Paddle shrunk" << std::endl;
+                uint64_t t = Game::getInstance().timerManager.create(
+                        powerUpDuration, false, "powerup_shrink_paddle", {},
+                        [this](auto &&tag) {
+                            onPaddleShrinkTimerEnd(std::forward<decltype(tag)>(tag));
+                        }
+                );
+                std::cout << "Paddle is thinner. Timer ID: " << t << "\n";
                 break;
-            case PowerUpType::SlowBall:
+            }
+            case PowerUpType::SlowBall: {
                 // TODO: slow down ball speed
-                if (auto* playState = dynamic_cast<State_Play*>(
+                if (auto *playState = dynamic_cast<State_Play *>(
                         Game::getInstance().getCurrentState()))
-                    for (auto& ball : playState->getBalls()) {
-                        ball->setMaxSpeed(ball->MaxSpeed() * 0.8f); // slow down
-                        ball->velocity *= 0.8f;
+                    for (auto &ball: playState->getBalls()) {
+                        ball->setMaxSpeed(ball->MaxSpeed() / ballSpeedModifier); // slow down
+                        ball->velocity /= ballSpeedModifier;
                     }
+                // Start Timer
+                uint64_t t = Game::getInstance().timerManager.create(
+                        powerUpDuration, false, "powerup_slow_ball", {},
+                        [this](auto &&tag) {
+                            onBallSlowTimerEnd(std::forward<decltype(tag)>(tag));
+                        }
+                );
+                std::cout << "Ball is slower. Timer ID: " << t << "\n";
                 break;
-            case PowerUpType::FastBall:
+            }
+            case PowerUpType::FastBall: {
                 // TODO: speed up ball speed
-                if (auto* playState = dynamic_cast<State_Play*>(
+                if (auto *playState = dynamic_cast<State_Play *>(
                         Game::getInstance().getCurrentState()))
-                    for (auto& ball : playState->getBalls()) {
-                        ball->setMaxSpeed(ball->MaxSpeed() * 1.2f); // speed up
-                        ball->velocity *= 1.2f;
+                    for (auto &ball: playState->getBalls()) {
+                        ball->setMaxSpeed(ball->MaxSpeed() * ballSpeedModifier); // speed up
+                        ball->velocity *= ballSpeedModifier;
                     }
+                // Start Timer
+                uint64_t t = Game::getInstance().timerManager.create(
+                        powerUpDuration, false, "powerup_fast_ball", {},
+                        [this](auto &&tag) {
+                            onBallFastTimerEnd(std::forward<decltype(tag)>(tag));
+                        }
+                );
+                std::cout << "Ball is faster. Timer ID: " << t << "\n";
                 break;
-            case PowerUpType::StickyPaddle:
-                sticky = true;
+            }
+            case PowerUpType::StickyPaddle: {
+                sticky = true;// get the name of this paddle instance
+                // If the timer is already running, reset it
+                Game::getInstance().timerManager.stopByTag("powerup_sticky", {});
+                uint64_t t = Game::getInstance().timerManager.create(
+                        powerUpDuration, false, "powerup_sticky", {},
+                        [this](auto && tag) { 
+                            onStickyTimerEnd(std::forward<decltype(tag)>(tag)); }
+                );
+                std::cout << "Sticky paddle effect activated for 3 seconds. Timer ID: " << t << "\n";
                 break;
+            }
             default:
                 break;
         }
     }
+}
+
+void Entity_Paddle::onStickyTimerEnd(uint64_t id) {
+    (void)id;
+    sticky = false;
+    if (auto* playState = dynamic_cast<State_Play*>(Game::getInstance().getCurrentState())) {
+        for (auto& ball : playState->getBalls())
+            if (ball->stuckToPaddle) ball->Release();
+    }
+    std::cout << "Sticky paddle effect ended.\n";
+}
+
+void Entity_Paddle::onPaddleGrowTimerEnd(uint64_t id) {
+    (void)id;
+    // shrink paddle back to normal size
+    size.x /= sizeModifier;
+}
+
+void Entity_Paddle::onPaddleShrinkTimerEnd(uint64_t id) {
+    (void)id;
+    size.x *= sizeModifier;
+}
+
+void Entity_Paddle::onBallSlowTimerEnd(uint64_t id) {
+    (void)id;
+    if (auto* playState = dynamic_cast<State_Play*>(Game::getInstance().getCurrentState()))
+        for (auto& ball : playState->getBalls()) {
+            ball->setMaxSpeed(ball->MaxSpeed() * ballSpeedModifier); // restore speed
+            ball->velocity *= ballSpeedModifier;
+        }
+}
+
+void Entity_Paddle::onBallFastTimerEnd(uint64_t id) {
+    (void)id;
+    if (auto* playState = dynamic_cast<State_Play*>(Game::getInstance().getCurrentState()))
+        for (auto& ball : playState->getBalls()) {
+            ball->setMaxSpeed(ball->MaxSpeed() / ballSpeedModifier); // restore speed
+            ball->velocity /= ballSpeedModifier;
+        }
 }
