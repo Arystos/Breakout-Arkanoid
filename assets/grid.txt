@@ -6,3 +6,5 @@
 1 0 0 1 0 0 1 0 1 0
 0 0 1 1 1 1 1 1 1 1
 1 2 4 4 4 4 4 1 0 0
+
+Legenda veloce: 0 vuoto, 1 blocco semplice, 2 blocco più duro, 3 indistruttibile, 4 drop power-up. Creami una griglia 8x10 (8 righe e 10 colonne) di numeri da 0 a 4 che formano delle forme carine. Ma non darmi cose banali, dammi cose meme tipo gatti stilizzati, super mario, cose riconoscibili 

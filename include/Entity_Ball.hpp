@@ -30,6 +30,7 @@ public:
     [[nodiscard]] float MaxSpeed() const { return maxSpeed; }
     [[nodiscard]] float MinSpeed() const { return minSpeed; }
     float setMaxSpeed(float s) { maxSpeed = s; return maxSpeed; }
+    float setMinSpeed(float s) { minSpeed = s; return minSpeed; }
     
     State* setCurrentState(State* s) { currentState = s; return currentState; }
 

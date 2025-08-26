@@ -82,9 +82,7 @@ void State_Play::handleInput(Game &game, const SDL_Event &event) {
                         break; // release only one ball
                     }
                 }
-                game.pushState(std::make_unique<State_Play>());
                 break;
-                // TODO: Improove paddle smothness
             default:
                 break;
         }
@@ -274,6 +272,19 @@ State_Play::loadLevel(const std::string &file, float offsetX, float offsetY) {
 
 void State_Play::onExit(Game &game) {
     State::onExit(game);
+    // stop all timers
+    game.timerManager.stopAll();
+    // clear all entities
+    paddle.reset();
+    balls.clear();
+    bricks.clear();
+    powerUps.clear();
+    // reset UI
+    winTitle.visible = false;
+    powerUpTitle.visible = false;
+    powerUpLabel.visible = false;
+    // reset ball count
+    game.setBallCount(0);
 }
 
 std::unique_ptr<Entity_PowerUp> 

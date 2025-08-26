@@ -28,6 +28,12 @@ public:
 
     void stopByTag(const char *string, std::any payload);
 
+    void pauseAll();
+    void resumeAll();
+    void stopAll();
+    
+    bool isTagActive(const std::string& tag, std::any payload) const;
+
 private:
     uint64_t nextId_{1};
     std::vector<Timer> timers_;

@@ -55,6 +55,9 @@ void State_Pause::render(Game &game) {
 void State_Pause::onEnter(Game &game) {
     State::onEnter(game);
     std::cout << "Pause State" << std::endl;
+    
+    // Pause timers
+    game.timerManager.pauseAll();
 
     auto* renderer = game.getRenderer();
     auto* uiFont = game.uiFont();
@@ -84,4 +87,6 @@ void State_Pause::onEnter(Game &game) {
 
 void State_Pause::onExit(Game &game) {
     State::onExit(game);
+    // resume timers
+    game.timerManager.resumeAll();
 }

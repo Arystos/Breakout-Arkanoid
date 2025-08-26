@@ -26,25 +26,13 @@ Game::~Game() {
 #pragma region Initialization and Cleanup
 
 bool Game::init(const char *title, bool fullscreen) {
-    
-    Uint32 flags = SDL_WINDOW_SHOWN;
-    if (fullscreen) {
-        flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-    }
 
-    // Disable filtering when scaling (pixel art)
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");   // "0" o "nearest"
-    // Enable High-DPI support
-    SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "0");
+    // Set high-DPI support
+    SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "0");          // High-DPI ON
 
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
-        return false;
-    }
-    if (TTF_Init() == -1) {
-        SDL_Log("TTF_Init failed: %s", TTF_GetError());
-        return false;
-    }
+    // crea la window CON high-DPI
+    Uint32 flags = SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI;
+    if (fullscreen) flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 
     window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
     if (!window) {
@@ -63,22 +51,26 @@ bool Game::init(const char *title, bool fullscreen) {
         return false;
     }
 
-    // Pixel 1:1 mapping for logical to physical pixels (no automatic scaling)
-    {
-        int outW = 0, outH = 0;
-        SDL_GetRendererOutputSize(renderer, &outW, &outH); // dimensione in pixel fisici
-        width = outW; height = outH;
-    }
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0"); // niente filtro
 
-    /* 4B) Alternativa: risoluzione logica fissa con scaling "a scalini" (integri)
-       (scommenta questo blocco e commenta il blocco 4A, se preferisci una base fissa)
-    {
-        const int V_W = 1280, V_H = 720;
-        SDL_RenderSetLogicalSize(renderer_, V_W, V_H);      // virtual resolution
-        SDL_RenderSetIntegerScale(renderer_, SDL_TRUE);     // evita filtri → nitido
-        w_ = V_W; h_ = V_H;
+// reset di stato renderer
+    SDL_RenderSetScale(renderer, 1.0f, 1.0f);
+    SDL_RenderSetViewport(renderer, nullptr);
+
+// usa una logical size fissa per il layout
+    const int designW = 1280;
+    const int designH = 720;
+    SDL_RenderSetLogicalSize(renderer, width, height);
+    SDL_RenderSetIntegerScale(renderer, SDL_TRUE); // niente blur
+
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
+        return false;
     }
-    */
+    if (TTF_Init() == -1) {
+        SDL_Log("TTF_Init failed: %s", TTF_GetError());
+        return false;
+    }
 
     // Load a default font for UI
     uiFont_ = TTF_OpenFont("assets/fonts/Roboto-Regular.ttf", 28);

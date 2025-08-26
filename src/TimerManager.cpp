@@ -58,3 +58,36 @@ void TimerManager::stopByTag(const char *string, std::any payload) {
     }
 
 }
+
+void TimerManager::pauseAll() {
+    for (auto &t : timers_) t.pause();
+}
+
+void TimerManager::resumeAll() {
+    for (auto &t : timers_) t.resume();
+}
+
+void TimerManager::stopAll() {
+    for (auto &t : timers_) t.stop();
+}
+
+bool TimerManager::isTagActive(const std::string &tag, std::any payload) const {
+    for (const auto &t : timers_) {
+        if (t.tag == tag) {
+            if (payload.has_value() && t.payload.has_value()) {
+                if (t.payload.type() == payload.type()) {
+                    if (t.payload.type() == typeid(std::string)) {
+                        if (std::any_cast<std::string>(t.payload) == std::any_cast<std::string>(payload)) {
+                            return t.isRunning();
+                        }
+                    } else {
+                        // Other types can be compared here as needed
+                    }
+                }
+            } else if (!payload.has_value() && !t.payload.has_value()) {
+                return t.isRunning();
+            }
+        }
+    }
+    return false;
+}

@@ -84,10 +84,12 @@ private:
         std::string file;
     };
     std::vector<LevelInfo> levels = {
-            {}, // dummy level 0
+            {"Grid Test", "assets/grid.txt"}, // dummy level 0
             {"Level 1", "assets/level1.txt"},
             {"Level 2", "assets/level2.txt"},
-            {"Level 3", "assets/level3.txt"}
+            {"Level 3", "assets/level3.txt"},
+            {"Level 4", "assets/level4.txt"},
+            {"Level 5", "assets/level5.txt"}
     };
     
     const int maxLevels = static_cast<int>(levels.size());

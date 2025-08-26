@@ -28,8 +28,8 @@ public:
     void onStickyTimerEnd(uint64_t id);
     void onPaddleGrowTimerEnd(uint64_t id);
     void onPaddleShrinkTimerEnd(uint64_t id);
-    void onBallSlowTimerEnd(uint64_t id);
-    void onBallFastTimerEnd(uint64_t id);
+    void onBallSlowTimerEnd(uint64_t id, std::unique_ptr<struct Entity_Ball> *pPtr);
+    void onBallFastTimerEnd(uint64_t id, std::unique_ptr<struct Entity_Ball> *ptr);
     void onPowerUpCollectedTimerEnd(uint64_t id);
     
 private:
@@ -40,10 +40,19 @@ private:
     int moveSign{0}; // -1 left, +1 right, 0 none
     
     float sizeModifier{1.25f};
-    float ballSpeedModifier{1.2f};
+    float ballSpeedModifier{1.3f};
     
     // time for power-ups
-    float powerUpDuration{3.0f};
+    float powerUpDuration{10.0f};
+    
+    // vector of power-up tags
+    std::vector<std::string> activePowerUpTags{
+        "sticky_paddle",
+        "paddle_grow",
+        "paddle_shrink",
+        "ball_slow",
+        "ball_fast"
+    };
 };
 
 
