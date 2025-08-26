@@ -6,9 +6,14 @@
 
 void State_MainMenu::onEnter(Game &game) {
     std::cout << "Main Menu State" << std::endl;
+    SDL_SetWindowTitle(game.getWindow(), "Breakout");
 
     auto* renderer = game.getRenderer();
     auto* uiFont = game.uiFont();
+
+    if (game.LevelIndex() > 0) {
+        game.SetLevelIndex(game.LevelIndex() -1);
+    }
 
     // Title
     UI::BuildLabel(renderer, title, "Breakout", uiFont, titleColor, UI::AlignH::Center);

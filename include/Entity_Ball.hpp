@@ -28,6 +28,7 @@ public:
     [[nodiscard]] float Radius() const { return radius; }
     [[nodiscard]] float Size() const { return radius * 2.0f; } // diameter
     [[nodiscard]] float MaxSpeed() const { return maxSpeed; }
+    [[nodiscard]] float MinSpeed() const { return minSpeed; }
     float setMaxSpeed(float s) { maxSpeed = s; return maxSpeed; }
     
     State* setCurrentState(State* s) { currentState = s; return currentState; }
@@ -40,6 +41,7 @@ public:
 private:
     float radius = 10.0f; // default radius
     float maxSpeed = 500.0f;
+    float minSpeed = 200.0f;
     glm::vec2 normal{}; // collision normal
     glm::vec2 stickOffset{};
     Game& game = Game::getInstance();

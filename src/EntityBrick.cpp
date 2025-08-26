@@ -24,8 +24,6 @@ Entity_Brick::Entity_Brick() {
 
 void Entity_Brick::render(SDL_Renderer *r) {
     // se color è float 0..1
-    auto to8 = [](float v){ return static_cast<Uint8>(std::clamp(v, 0.0f, 1.0f) * 255.0f); };
-
     SDL_Rect rect{
             static_cast<int>(position.x),
             static_cast<int>(position.y),
@@ -33,8 +31,8 @@ void Entity_Brick::render(SDL_Renderer *r) {
             std::max(1, static_cast<int>(size.y))
     };
 
-    SDL_SetRenderDrawBlendMode(r, SDL_BLENDMODE_NONE); // evita alpha se non vuoi blending
-    SDL_SetRenderDrawColor(r, to8(color.r), to8(color.g), to8(color.b), to8(color.a));
+    SDL_SetRenderDrawBlendMode(r, SDL_BLENDMODE_NONE);
+    SDL_SetRenderDrawColor(r, color.r, color.g, color.b, color.a);
     SDL_RenderFillRect(r, &rect);
 }
 

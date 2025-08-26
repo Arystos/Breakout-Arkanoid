@@ -48,6 +48,9 @@ public:
     int BallCount() const { return ballCount; }
     int getBallCount() const { return ballCount; }
     int setBallCount(int count) { ballCount = count; return ballCount; }
+    int LevelIndex() const { return levelIndex; }
+    int IncrementLevelIndex() { return ++levelIndex; }
+    int SetLevelIndex(int index) { levelIndex = index; return levelIndex; }
 
     /*
 #pragma region Timer Management
@@ -88,6 +91,7 @@ private:
     //AssetManager assetManager;
     float FPS = 60.0f; // Frames per second
     int ballCount = 0;
+    int levelIndex;
     
     // text rendering
     TTF_Font* font = nullptr;

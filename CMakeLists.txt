@@ -29,6 +29,8 @@ set(BREAKOUT_SRC
         include/Timer.hpp
         src/TimerManager.cpp
         include/TimerManager.hpp
+        src/State_Win.cpp
+        include/State_Win.hpp
 )
 
 add_executable(breakout ${BREAKOUT_SRC})

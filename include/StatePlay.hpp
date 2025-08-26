@@ -65,17 +65,32 @@ private:
         SDL_Rect dst{0, 0, 0, 0};
         bool visible{false};
     };
-    Label wonLabel{"You Win!"};
-    Label powerUpLabel{"Napoli!"};
+    Label wonLabel{"Level Complete!"};
+    Label powerUpLabel{"Power_Up!"};
+    Label messageLabel{"Loading next level..."};
     
     // UI
     UI::Label winTitle;
     UI::Label powerUpTitle;
+    UI::Label messageTitle;
     
     // Cache colors
     // white
-    SDL_Color titleColor{240, 240, 240, 255};
-
+    SDL_Color titleColor{240, 240, 240, 255}; // white
+    SDL_Color textColor{200, 200, 200, 255}; // slightly grayer white
+    
+    struct LevelInfo {
+        std::string name;
+        std::string file;
+    };
+    std::vector<LevelInfo> levels = {
+            {}, // dummy level 0
+            {"Level 1", "assets/level1.txt"},
+            {"Level 2", "assets/level2.txt"},
+            {"Level 3", "assets/level3.txt"}
+    };
+    
+    const int maxLevels = static_cast<int>(levels.size());
 };
 
 

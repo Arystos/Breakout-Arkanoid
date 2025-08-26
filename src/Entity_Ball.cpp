@@ -114,6 +114,9 @@ void Entity_Ball::onCollision(Entity &entity) {
         if (glm::length(velocity) > maxSpeed) {
             velocity = glm::normalize(velocity) * maxSpeed;
         }
+        if (glm::length(velocity) < minSpeed) {
+            velocity = glm::normalize(velocity) * minSpeed;
+        }
 
         // Deprecated
         //position.y = paddle_->position.y - 2 * radius; // reposition above paddle_
@@ -141,6 +144,9 @@ void Entity_Ball::onCollision(Entity &entity) {
         velocity.y = speed * glm::sin(angle);
         if (glm::length(velocity) > maxSpeed) {
             velocity = glm::normalize(velocity) * maxSpeed;
+        }
+        if (glm::length(velocity) < minSpeed) {
+            velocity = glm::normalize(velocity) * minSpeed;
         }
         brick_->onCollision(*this);
     }

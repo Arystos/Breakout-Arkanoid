@@ -41,6 +41,7 @@ void State_GameOver::render(Game &game) {
 void State_GameOver::onEnter(Game &game) {
     State::onEnter(game);
     std::cout << "Game Over State" << std::endl;
+    SDL_SetWindowTitle(game.getWindow(), getName());
     
     auto* renderer = game.getRenderer();
     auto* uiFont = game.uiFont();
@@ -51,7 +52,6 @@ void State_GameOver::onEnter(Game &game) {
     title.dst.h *= 2;
     title.dst.x = (game.Width() - title.dst.w) / 2; // center horizontally
     title.dst.y = game.Height() / 3;
-    // Set the title to be bigger
     
     
     // Score
