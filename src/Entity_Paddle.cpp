@@ -147,9 +147,13 @@ void Entity_Paddle::onCollision(Entity &other) {
                         Game::getInstance().getCurrentState()))
                     for (auto &ball: playState->getBalls()) {
                         // slow down
+                        /*
                         ball->setMaxSpeed(ball->MaxSpeed() / ballSpeedModifier);
                         ball->setMinSpeed(ball->MinSpeed() / ballSpeedModifier);
                         ball->velocity /= ballSpeedModifier;
+                         */
+                        Game::getInstance().setBallSpeedModifier(
+                                Game::getInstance().BallSpeedModifier() / ballSpeedModifier);
                         // Start Timer
                         uint64_t t = Game::getInstance().timerManager.create(
                                 powerUpDuration, false, "powerup_slow_ball", {},
@@ -167,9 +171,13 @@ void Entity_Paddle::onCollision(Entity &other) {
                         Game::getInstance().getCurrentState()))
                     for (auto &ball: playState->getBalls()) {
                         // speed up
+                        /*
                         ball->setMaxSpeed(ball->MaxSpeed() * ballSpeedModifier);
                         ball->setMinSpeed(ball->MinSpeed() * ballSpeedModifier);
                         ball->velocity *= ballSpeedModifier;
+                         */
+                        Game::getInstance().setBallSpeedModifier(
+                                Game::getInstance().BallSpeedModifier() * ballSpeedModifier);
                         // Start Timer
                         uint64_t t = Game::getInstance().timerManager.create(
                                 powerUpDuration, false, "powerup_fast_ball", {},
@@ -197,6 +205,9 @@ void Entity_Paddle::onCollision(Entity &other) {
                 break;
         }
         //Set the power-up label text
+        // print to console the text of the power-up collected
+        std::cout << "Power-up collected: " << powerUp->typeToString() << std::endl;
+        // show power-up label in the play state
         if (auto* playState = dynamic_cast<State_Play*>(Game::getInstance().getCurrentState())) {
             playState->SetPowerUpLabelText(powerUp->typeToString());
             playState->SetPowerUpLabelVisible(true);
@@ -236,26 +247,30 @@ void Entity_Paddle::onPaddleShrinkTimerEnd(uint64_t id) {
 
 void Entity_Paddle::onBallSlowTimerEnd(uint64_t id, std::unique_ptr<struct Entity_Ball> *ball) {
     (void)id;
-    ball->get()->setMaxSpeed(ball->get()->MaxSpeed() * ballSpeedModifier); // restore speed
-    ball->get()->velocity *= ballSpeedModifier;
+    //ball->get()->setMaxSpeed(ball->get()->MaxSpeed() * ballSpeedModifier); // restore speed
+    //ball->get()->velocity *= ballSpeedModifier;
+    Game::getInstance().setBallSpeedModifier(
+            Game::getInstance().BallSpeedModifier() * ballSpeedModifier);
 }
 
 void Entity_Paddle::onBallFastTimerEnd(uint64_t id, std::unique_ptr<Entity_Ball> *ball) {
     (void)id;
-    ball->get()->setMaxSpeed(ball->get()->MaxSpeed() / ballSpeedModifier); // restore speed
-    ball->get()->velocity /= ballSpeedModifier;
+    //ball->get()->setMaxSpeed(ball->get()->MaxSpeed() / ballSpeedModifier); // restore speed
+    //ball->get()->velocity /= ballSpeedModifier;
+    Game::getInstance().setBallSpeedModifier(
+            Game::getInstance().BallSpeedModifier() / ballSpeedModifier);
 }
 
 void Entity_Paddle::onPowerUpCollectedTimerEnd(uint64_t id) {
     (void)id;
-    // Hide power-up label
     if (auto* playState = dynamic_cast<State_Play*>(Game::getInstance().getCurrentState())) {
         // check if there are active timers for other power-ups
-        for (const auto& tag : activePowerUpTags) {
+        for (const auto& tag : Game::getInstance().activePowerUpTags) {
             if (Game::getInstance().timerManager.isTagActive(tag, {})) {
-                break;
+                break; // do not hide the label yet
             }
         }
+        // Hide power-up label
         playState->SetPowerUpLabelVisible(false);
-    }
+    };
 }

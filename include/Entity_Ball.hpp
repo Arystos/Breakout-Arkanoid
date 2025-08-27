@@ -23,7 +23,7 @@ public:
     void render(SDL_Renderer* renderer) override;
     void onCollision(Entity& other) override;
 
-    glm::vec2 velocity{300.0f, -300.0f};
+    glm::vec2 velocity{0.0f, 0.0f};
     
     [[nodiscard]] float Radius() const { return radius; }
     [[nodiscard]] float Size() const { return radius * 2.0f; } // diameter

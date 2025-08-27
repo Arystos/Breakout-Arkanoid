@@ -14,6 +14,9 @@ Entity_Ball::Entity_Ball() {
     size = {radius * 2.0f, radius * 2.0f};
     //velocity = {300.0f, -300.0f};
     game.setBallCount(game.BallCount() + 1);
+    // start stuck to paddle
+    stuckToPaddle = true;
+    // inactive until attached to paddle
     active = false;
 }
 
@@ -28,8 +31,8 @@ void Entity_Ball::attachToCentre(Entity_Paddle &p) {
 void Entity_Ball::update(float dt) {
     if (!active) return;
     if (!stuckToPaddle) {
-        position.x += velocity.x * dt;
-        position.y += velocity.y * dt;
+        position.x += velocity.x * dt * game.BallSpeedModifier();
+        position.y += velocity.y * dt * game.BallSpeedModifier();
     } else if (paddle) {
         position = paddle->position + stickOffset;
         position.y = paddle->position.y - 2 * radius; // stay above the paddle

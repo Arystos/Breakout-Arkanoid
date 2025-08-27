@@ -52,30 +52,19 @@ public:
     int IncrementLevelIndex() { return ++levelIndex; }
     int SetLevelIndex(int index) { levelIndex = index; return levelIndex; }
 
-    /*
-#pragma region Timer Management
-    Uint32 last = SDL_GetTicks();
-    std::vector<Timer> timers;
-    Timer& createTimer() {
-        timers.emplace_back();
-        return timers.back();
-    }
+    // vector of power-up tags
+    std::vector<std::string> activePowerUpTags{
+            "sticky_paddle",
+            "paddle_grow",
+            "paddle_shrink",
+            "ball_slow",
+            "ball_fast"
+    };
     
-    // Update all timers
-    void updateTimers(float dt) {
-        for (auto& timer : timers) {
-            timer.update(dt);
-        }
-        // cleanup stopped timers
-        timers.erase(std::remove_if(timers.begin(), timers.end(),
-                                    [](const Timer &t) { return !t.isRunning(); }), timers.end());
-    }
+    float BallSpeedModifier() const { return ballSpeedModifier; }
+    float setBallSpeedModifier(float mod) { ballSpeedModifier = mod; return ballSpeedModifier; }
     
-    
-    
-#pragma endregion
-     */
-
+    // TimerManager
     TimerManager timerManager;
 
 
@@ -92,6 +81,7 @@ private:
     float FPS = 60.0f; // Frames per second
     int ballCount = 0;
     int levelIndex;
+    float ballSpeedModifier{1.0f};
     
     // text rendering
     TTF_Font* font = nullptr;

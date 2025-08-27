@@ -9,6 +9,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <random>
 
 void State_Play::onEnter(Game &game) {
     // init level, paddle, ball etc. later
@@ -23,6 +24,7 @@ void State_Play::onEnter(Game &game) {
 
     // load level
     game.IncrementLevelIndex();
+    
     std::cout << "Loading level " << game.LevelIndex() << std::endl;
     if (game.LevelIndex() < (int)levels.size()) {
         const auto &next = levels[game.LevelIndex()];
@@ -34,6 +36,7 @@ void State_Play::onEnter(Game &game) {
         game.SetLevelIndex(0); // reset level index for next playthrough
         return;
     }
+    
     
     // Old implementation: load a single level from a text file
     //bricks = loadLevel("assets/grid.txt", 50.0f, 50.0f);
@@ -323,7 +326,14 @@ std::unique_ptr<Entity_Ball>
             paddle->position.y - ball->Size() - 1.0f
     };
     ball->attachToCentre(*paddle);
+    // detach from paddle and set initial velocity
     ball->stuckToPaddle = false;
+    // random initial direction (left or right)
+    static std::mt19937 rng{std::random_device{}()}; //generate random seed
+    std::uniform_int_distribution<int> dist(0, 1);
+    int dir = dist(rng) == 0 ? -1 : 1;
+    ball->velocity = {dir * 300.0f, -300.0f};
+    
     ball->active = true;
 
     balls.push_back(std::move(ball));

@@ -24,7 +24,7 @@ public:
     void render(SDL_Renderer* renderer) override;
     void onCollision(Entity& other) override;
 
-    const std::string &typeToString();
+    const std::string &typeToString() const;
 
 private:
     TextureUPtr texture;

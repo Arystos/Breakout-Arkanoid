@@ -44,15 +44,6 @@ private:
     
     // time for power-ups
     float powerUpDuration{10.0f};
-    
-    // vector of power-up tags
-    std::vector<std::string> activePowerUpTags{
-        "sticky_paddle",
-        "paddle_grow",
-        "paddle_shrink",
-        "ball_slow",
-        "ball_fast"
-    };
 };
 
 

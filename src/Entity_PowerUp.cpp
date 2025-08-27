@@ -68,13 +68,16 @@ void Entity_PowerUp::onCollision(Entity &other) {
     }
 }
 
-const std::string &Entity_PowerUp::typeToString() {
+const std::string &Entity_PowerUp::typeToString() const {
     // TODO: improve with map or array
-    return (type == PowerUpType::ExpandPaddle) ? "Expand Paddle" :
-           (type == PowerUpType::ShrinkPaddle) ? "Shrink Paddle" :
-           (type == PowerUpType::MultiBall) ? "Multi Ball" :
-           (type == PowerUpType::SlowBall) ? "Slow Ball" :
-           (type == PowerUpType::FastBall) ? "Fast Ball" :
-           (type == PowerUpType::StickyPaddle) ? "Sticky Paddle" :
-           "Unknown";
+    static const std::string typeNames[] = {
+            "Expand Paddle",
+            "Shrink Paddle",
+            "Multi Ball",
+            "Slow Ball",
+            "Fast Ball",
+            "Sticky Paddle",
+            "Unknown"
+    };
+    return typeNames[static_cast<int>(type)];
 }
