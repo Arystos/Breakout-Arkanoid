@@ -63,6 +63,11 @@ public:
     
     float BallSpeedModifier() const { return ballSpeedModifier; }
     float setBallSpeedModifier(float mod) { ballSpeedModifier = mod; return ballSpeedModifier; }
+    int BallBounces() const { return ballBounces; }
+    int setBallBounces(int count) { ballBounces = count; return ballBounces; }
+    int TotalBallBounces() const { return totalBallBounces; }
+    int setTotalBallBounces(int count) { totalBallBounces = count; return totalBallBounces; }
+    void resetBallBounces() { totalBallBounces = ballBounces; ballBounces = 0; }
     
     // TimerManager
     TimerManager timerManager;
@@ -79,8 +84,10 @@ private:
     int height = 600; // Default height
     //AssetManager assetManager;
     float FPS = 60.0f; // Frames per second
-    int ballCount = 0;
-    int levelIndex;
+    int ballCount = 0; // current number of balls in play
+    int levelIndex; // current level index
+    int ballBounces = 0; // total ball bounces
+    int totalBallBounces = 0; // all time ball bounces
     float ballSpeedModifier{1.0f};
     
     // text rendering

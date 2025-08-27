@@ -44,7 +44,11 @@ void Entity::render(SDL_Renderer *r) {
 void Entity_Paddle::render(SDL_Renderer *r) {
     if (texture == nullptr) {
         // Create a rectangle for the paddle
-        SDL_SetRenderDrawColor(r, 255, 255, 255, 255); // White color
+        if (sticky)
+            SDL_SetRenderDrawColor(r, 255, 255, 0, 255); // yellow
+        else {
+            SDL_SetRenderDrawColor(r, 255, 255, 255, 255); // White color
+        }
         SDL_Rect rect{(int)position.x, (int)position.y, (int)size.x, (int)size.y};
         SDL_RenderFillRect(r, &rect);
     } else {

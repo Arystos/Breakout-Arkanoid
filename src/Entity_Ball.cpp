@@ -31,8 +31,7 @@ void Entity_Ball::attachToCentre(Entity_Paddle &p) {
 void Entity_Ball::update(float dt) {
     if (!active) return;
     if (!stuckToPaddle) {
-        position.x += velocity.x * dt * game.BallSpeedModifier();
-        position.y += velocity.y * dt * game.BallSpeedModifier();
+        position += velocity * dt * game.BallSpeedModifier() * (1.0f + game.BallBounces() * 0.0001f);
     } else if (paddle) {
         position = paddle->position + stickOffset;
         position.y = paddle->position.y - 2 * radius; // stay above the paddle
@@ -47,12 +46,15 @@ void Entity_Ball::update(float dt) {
     if (position.x <= 0) { // Left border
         position.x = 0;
         velocity.x = -velocity.x;
+        onCollision(*this);
     } else if (position.x + radius * 2.0f >= float (game.Width())) { // Right border
         position.x = float(game.Width()) - radius * 2.0f;
         velocity.x = -velocity.x;
+        onCollision(*this);
     } else if (position.y <= 0) { // Top border
         position.y = 0.0f;
         velocity.y = -velocity.y;
+        onCollision(*this);
     } else if (position.y + radius * 2.0f >= float(game.Height())) { // Bottom border
         std::cout << "Ball lost!" << std::endl;
         game.setBallCount(game.BallCount() - 1);
@@ -62,9 +64,9 @@ void Entity_Ball::update(float dt) {
             // check if there are other balls still active
             if (game.BallCount() <= 0) {
                 playState->playerLives--;
+                game.resetBallBounces();
             }
         }
-            
         return;
     }
     
@@ -121,22 +123,19 @@ void Entity_Ball::onCollision(Entity &entity) {
         velocity.y = -speed * glm::cos(bounceAngle);
         // give some of the paddle_'s horizontal velocity to the ball
         velocity.x += paddle_->getVelocity().x * 0.5f; // fattore 0.5 regolabile
-        // clamp to max speed
-        if (glm::length(velocity) > maxSpeed) {
+        // clamp speed
+        if (glm::length(velocity) > maxSpeed)
             velocity = glm::normalize(velocity) * maxSpeed;
-        }
-        if (glm::length(velocity) < minSpeed) {
+        if (glm::length(velocity) < minSpeed)
             velocity = glm::normalize(velocity) * minSpeed;
-        }
-
-        // Deprecated
-        //position.y = paddle_->position.y - 2 * radius; // reposition above paddle_
-        //position.x += velocity.x * 0.016f; // small offset to avoid sticking
+        paddle_->onCollision(*this);
+        return;
     }
 #pragma endregion
 
 #pragma region Brick Collsion
     if (auto* brick_ = dynamic_cast<Entity_Brick*>(&entity)) {
+        std::cout << "Ball hit brick!" << std::endl;
         // reflection
         velocity = glm::reflect(velocity, normal);
         position += normal * (radius * 0.5f);
@@ -153,15 +152,18 @@ void Entity_Ball::onCollision(Entity &entity) {
         float speed = glm::length(velocity);
         velocity.x = speed * glm::cos(angle);
         velocity.y = speed * glm::sin(angle);
-        if (glm::length(velocity) > maxSpeed) {
+        // clamp speed
+        if (glm::length(velocity) > maxSpeed)
             velocity = glm::normalize(velocity) * maxSpeed;
-        }
-        if (glm::length(velocity) < minSpeed) {
+        if (glm::length(velocity) < minSpeed)
             velocity = glm::normalize(velocity) * minSpeed;
-        }
         brick_->onCollision(*this);
+        return;
     }
 #pragma endregion
+
+    // increment total bounces
+    game.setBallBounces(game.BallBounces() + 1);
     
 }
 
