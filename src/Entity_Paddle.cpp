@@ -12,10 +12,9 @@
 Entity_Paddle::Entity_Paddle() {
     Game& game = Game::getInstance();
     position = {
-            (game.Width() * 0.5f - size.x * 0.5f),
-            (game.Height() - size.y - 100.0f)
+            ( game.PlayableWidth() * 0.5f - size.x * 0.5f),
+            ( game.PlayableHeight() - size.y - 20.0f)
     };
-    bounds = {0.f, static_cast<float>(game.Width())};
     size = {100.0f, 20.0f};
     speed = 500.0f; // default speed
     prevX = position.x;
@@ -87,11 +86,11 @@ void Entity_Paddle::move(float dir, float deltaTime) {
 
     // clamp to bounds
     bool clampedLeft = false, clampedRight = false;
-    if (position.x < bounds.minX) {
-        position.x = bounds.minX;
+    if (position.x < Game::getInstance().LeftBorder()) {
+        position.x = Game::getInstance().LeftBorder();
         clampedLeft = true;
-    } else if (position.x + size.x > bounds.maxX) {
-        position.x = bounds.maxX - size.x;
+    } else if (position.x + size.x > Game::getInstance().RightBorder()) {
+        position.x = Game::getInstance().RightBorder() - size.x;
         clampedRight = true;
     }
 
@@ -127,8 +126,7 @@ void Entity_Paddle::onCollision(Entity &other) {
                         [this](auto &&tag) {
                             onPaddleGrowTimerEnd(std::forward<decltype(tag)>(tag));
                         }
-                );
-                t = t;
+                );(void)t;
                 break;
             }
             case PowerUpType::ShrinkPaddle: {
@@ -141,8 +139,7 @@ void Entity_Paddle::onCollision(Entity &other) {
                         [this](auto &&tag) {
                             onPaddleShrinkTimerEnd(std::forward<decltype(tag)>(tag));
                         }
-                );
-                t = t;
+                );(void)t;
                 break;
             }
             case PowerUpType::SlowBall: {
@@ -159,8 +156,7 @@ void Entity_Paddle::onCollision(Entity &other) {
                                 [this, &ball](auto &&tag) {
                                     onBallSlowTimerEnd(std::forward<decltype(tag)>(tag), &ball);
                                 }
-                        );
-                        t = t;
+                        );(void)t;
                     }
                 break;
             }
@@ -178,8 +174,7 @@ void Entity_Paddle::onCollision(Entity &other) {
                                 [this, &ball](auto &&tag) {
                                     onBallFastTimerEnd(std::forward<decltype(tag)>(tag), &ball);
                                 }
-                        );
-                        t = t;
+                        );(void)t;
                     }
                 break;
             }
@@ -191,20 +186,24 @@ void Entity_Paddle::onCollision(Entity &other) {
                         powerUpDuration, false, "powerup_sticky", {},
                         [this](auto && tag) { 
                             onStickyTimerEnd(std::forward<decltype(tag)>(tag)); }
-                );
-                t = t;
+                );(void)t;
                 break;
             }
             default:
                 break;
         }
         //Set the power-up label text
-        // print to console the text of the power-up collected
-        std::cout << "Power-up collected: " << powerUp->typeToString() << std::endl;
         // show power-up label in the play state
         if (auto* playState = dynamic_cast<State_Play*>(Game::getInstance().getCurrentState())) {
             playState->SetPowerUpLabelText(powerUp->typeToString());
             playState->SetPowerUpLabelVisible(true);
+            
+            // Info text for specific power-ups
+            if (powerUp->type == PowerUpType::StickyPaddle) {
+                playState->SetPowerUpLabelInfoText("Press Space to release the ball");
+                playState->SetPowerUpLabelInfoVisible(true);
+            }
+            
             // stop if any previous timer is running
             Game::getInstance().timerManager.endByTag("powerup_label", {});
             // Start a timer to hide the label after a short duration
@@ -213,7 +212,7 @@ void Entity_Paddle::onCollision(Entity &other) {
                     [this](auto &&tag) {
                         onPowerUpCollectedTimerEnd(std::forward<decltype(tag)>(tag));
                     }
-            ); t = t;
+            );(void)t;
         }
     }
 }
@@ -265,5 +264,6 @@ void Entity_Paddle::onPowerUpCollectedTimerEnd(uint64_t id) {
         }
         // Hide power-up label
         playState->SetPowerUpLabelVisible(false);
+        playState->SetPowerUpLabelInfoVisible(false);
     };
 }

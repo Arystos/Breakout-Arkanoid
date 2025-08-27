@@ -41,10 +41,14 @@ public:
     // get string of power-up label
     std::string PowerUpLabelText () const { return powerUpLabel.text; }
     void SetPowerUpLabelText (const std::string& text) { powerUpLabel.text = text; }
+    void SetPowerUpLabelInfoText (const std::string& text) { powerUpLabelInfo.text = text; }
     bool PowerUpLabelVisible() const { return powerUpLabel.visible; }
+    
     void SetPowerUpLabelVisible(bool v) { powerUpLabel.visible = v; }
+    void SetPowerUpLabelInfoVisible(bool v) { powerUpLabelInfo.visible = v; }
 
     int playerLives = 3;
+
 private:
     bool paused = false; // Flag to check if the game is paused
     int score = 0; // Player's score
@@ -70,12 +74,14 @@ private:
     };
     Label wonLabel{"Level Complete!"};
     Label powerUpLabel{"Power_Up!"};
+    Label powerUpLabelInfo{"Power-up collected!"};
     Label messageLabel{"Loading next level..."};
     Label livesLabel{"Lives: 3"};
     
     // UI
     UI::Label winTitle;
     UI::Label powerUpTitle;
+    UI::Label powerUpInfoTitle;
     UI::Label messageTitle;
     UI::Label livesTitle;
     

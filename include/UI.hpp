@@ -14,6 +14,7 @@ namespace UI {
     // Label 
     struct Label {
         std::string text;          // testo UTF-8
+        float scale {1.0f};
         SDL_Texture* tex = nullptr;// texture generata da TTF
         SDL_Rect dst{0,0,0,0};     // posizione e dimensioni sullo schermo
         SDL_Rect container{0,0,0,0};

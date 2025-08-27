@@ -29,6 +29,13 @@ public:
     
     int Width() const { return width; }
     int Height() const { return height; }
+    int PlayableWidth() const { return playableWidth; }
+    int PlayableHeight() const { return playableHeight; }
+    int LeftBorder() const { return lBorder; }
+    int RightBorder() const { return rBorder; }
+    int TopBorder() const { return tBorder; }
+    int BottomBorder() const { return bBorder; }
+    
 #pragma endregion
 
 #pragma region State Management
@@ -85,6 +92,12 @@ private:
     bool running = false;
     int width = 800;  // Default width
     int height = 600; // Default height
+    int playableWidth = 720;
+    int playableHeight = 520;
+    int lBorder = (width - playableWidth) / 2;
+    int rBorder = width - lBorder;
+    int tBorder = (height - playableHeight) / 2;
+    int bBorder = height - tBorder;
     //AssetManager assetManager;
     float FPS = 60.0f; // Frames per second
     float currentFPS = 0.0f;

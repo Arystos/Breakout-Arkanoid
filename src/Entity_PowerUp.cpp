@@ -15,7 +15,6 @@ Entity_PowerUp::Entity_PowerUp() {
     std::uniform_int_distribution<int> dist(0, static_cast<int>(PowerUpType::Count) - 1);
     type = static_cast<PowerUpType>(dist(rng));
     //type = static_cast<PowerUpType>(5); // for testing
-    std::cout << "PowerUp created with type " << static_cast<int>(type) << std::endl; // debug
 }
 
 void Entity_PowerUp::update(float dt) {

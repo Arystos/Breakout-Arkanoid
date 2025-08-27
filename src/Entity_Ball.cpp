@@ -43,20 +43,20 @@ void Entity_Ball::update(float dt) {
     }
     
     // If the ball hits the screen borders bounce it back
-    if (position.x <= 0) { // Left border
-        position.x = 0;
+    
+    if (position.x <= (float)game.LeftBorder()) { // Left border
+        position.x = (float)game.LeftBorder();
         velocity.x = -velocity.x;
         onCollision(*this);
-    } else if (position.x + radius * 2.0f >= float (game.Width())) { // Right border
-        position.x = float(game.Width()) - radius * 2.0f;
+    } else if (position.x + radius * 2.0f >= (float)game.RightBorder()) { // Right border
+        position.x = (float)game.RightBorder() - radius * 2.0f;
         velocity.x = -velocity.x;
         onCollision(*this);
-    } else if (position.y <= 0) { // Top border
-        position.y = 0.0f;
+    } else if (position.y <= (float)game.TopBorder()) { // Top border
+        position.y = (float)game.TopBorder();
         velocity.y = -velocity.y;
         onCollision(*this);
-    } else if (position.y + radius * 2.0f >= float(game.Height())) { // Bottom border
-        std::cout << "Ball lost!" << std::endl;
+    } else if (position.y + radius * 2.0f >= (float)game.BottomBorder()) { // Bottom border
         game.setBallCount(game.BallCount() - 1);
         toBeDestroyed = true;
         // decrement lives and check for game over
@@ -154,7 +154,6 @@ void Entity_Ball::onCollision(Entity &entity) {
 
 #pragma region Brick Collsion
     if (auto* brick_ = dynamic_cast<Entity_Brick*>(&entity)) {
-        std::cout << "Ball hit brick!" << std::endl;
         // reflection
         velocity = glm::reflect(velocity, normal);
         position += normal * (radius * 0.5f);
@@ -189,11 +188,7 @@ void Entity_Ball::onCollision(Entity &entity) {
 void Entity_Ball::StickTo(Entity_Paddle& p) {
     paddle = &p;
     stuckToPaddle = true;
-    // print centre of the paddle
-    std::cout << "Paddle centre: " << (p.position.x + p.size.x / 2) << std::endl;
     stickOffset = position - p.position; // top-left vs top-left
-    std::cout << "Ball stuck to paddle at offset: (" 
-              << stickOffset.x << ", " << stickOffset.y << ")" << std::endl;
 }
 
 void Entity_Ball::Release() {

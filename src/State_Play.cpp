@@ -65,8 +65,14 @@ void State_Play::onEnter(Game &game) {
     UI::BuildLabel(renderer, powerUpTitle, powerUpLabel.text, font, titleColor, UI::AlignH::Center);
     powerUpTitle.dst.x = (game.Width() - powerUpTitle.dst.w) / 2; // center horizontally
     powerUpTitle.dst.y = game.Height() / 1.6f;
+    // power-up info title
+    UI::BuildLabel(renderer, powerUpInfoTitle, powerUpLabelInfo.text, font, titleColor, UI::AlignH::Center);
+    powerUpInfoTitle.scale = 0.7f;
+    powerUpInfoTitle.dst.x = (game.Width() - powerUpInfoTitle.dst.w) / 2; // center horizontally
+    powerUpInfoTitle.dst.y = game.Height() / 1.6f + 20;
     // message title
     UI::BuildLabel(renderer, messageTitle, messageLabel.text, font, textColor, UI::AlignH::Left);
+    messageTitle.scale = 0.7f;
     messageTitle.dst.x = (game.Width() - powerUpTitle.dst.w) / 2; // center horizontally
     messageTitle.dst.y = game.Height() / 1.6f;
     // lives title
@@ -166,16 +172,8 @@ void State_Play::update(Game &game, float dt) {
                     // go to next level
                     game.changeState(std::make_unique<State_Play>());
                 }
-        ); t = t;
-        /*
-        static float winTimer = 0.0f;
-        winTimer += dt;
-        if (winTimer > 3.0f) {
-            winTimer = 0.0f;
-            // go to next level
-            game.changeState(std::make_unique<State_Play>());
-        }
-         */
+        ); (void)t;
+        
         bricks.clear(); // clear any remaining indestructible bricks for next level
     }
 }
@@ -184,7 +182,7 @@ void State_Play::render(Game &game) {
     SDL_Renderer* renderer = game.getRenderer();
     
     // TODO: placeholder: draw a playfield box and title
-    SDL_Rect box{40, 40, game.Width() - 80, game.Height() - 80 };
+    SDL_Rect box{40, 40, game.PlayableWidth(), game.PlayableHeight() };
     SDL_SetRenderDrawColor(renderer, 60, 60, 60, 255);
     SDL_RenderDrawRect(renderer, &box);
 
@@ -201,6 +199,13 @@ void State_Play::render(Game &game) {
         powerUpTitle.dst.x = (game.Width() - powerUpTitle.dst.w) / 2;
         powerUpTitle.dst.y = game.Height() / 1.6f;
         UI::DrawLabel(renderer, powerUpTitle);
+    }
+
+    if (powerUpLabelInfo.visible) {
+        UI::SetLabelText(renderer, powerUpInfoTitle, powerUpLabelInfo.text, textColor);
+        powerUpInfoTitle.dst.x = (game.Width() - powerUpInfoTitle.dst.w) / 2;
+        powerUpInfoTitle.dst.y = game.Height() / 1.6f + 40; // below power-up title
+        UI::DrawLabel(renderer, powerUpInfoTitle);
     }
 
     if (livesTitle.visible && playerLives > 0) {

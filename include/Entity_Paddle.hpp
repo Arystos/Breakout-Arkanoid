@@ -8,7 +8,7 @@
 #include "Entity.hpp"
 #include <SDL.h>
 
-struct Bounds { float minX, maxX; };
+
 
 class Entity_Paddle : public Entity {
 public:
@@ -33,7 +33,6 @@ public:
     void onPowerUpCollectedTimerEnd(uint64_t id);
     
 private:
-    Bounds bounds{0.f, 0.f};
     float speed {500.0f}; // default speed (pixels per second)
     float prevX{0.f};
     glm::vec2 velocity{0.f, 0.f};

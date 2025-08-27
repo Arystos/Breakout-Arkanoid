@@ -43,9 +43,11 @@ void State_Pause::render(Game &game) {
     buttonQuit.hovered = (selected == 1); // hovered is true if selected is 1 ...
     
     // Semi-transparent background
+    /*
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 150);
     SDL_Rect fullScreenRect{0, 0, game.Width(), game.Height()};
     SDL_RenderFillRect(renderer, &fullScreenRect);
+    */
     
     UI::DrawLabel(renderer, title);
     UI::DrawButton(renderer, buttonResume);

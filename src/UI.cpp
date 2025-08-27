@@ -89,7 +89,8 @@ namespace UI {
 
         int w = 0, h = 0;
         querySize(L.tex, w, h);
-        L.dst.w = w; L.dst.h = h;
+        L.dst.w = int(w * L.scale);
+        L.dst.h = int(h * L.scale);
         if (L.container.w == 0 && L.container.h == 0)
             L.container = L.dst;
 
