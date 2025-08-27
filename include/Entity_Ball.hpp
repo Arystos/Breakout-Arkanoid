@@ -45,7 +45,7 @@ public:
 private:
     float radius = 10.0f; // default radius
     float maxSpeed = 500.0f;
-    float minSpeed = 200.0f;
+    float minSpeed = 350.0f;
     glm::vec2 normal{}; // collision normal
     glm::vec2 stickOffset{};
     Game& game = Game::getInstance();

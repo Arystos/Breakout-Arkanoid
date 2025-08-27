@@ -12,6 +12,7 @@
 #include "Entity_Brick.hpp"
 #include "Entity_PowerUp.hpp"
 #include "UI.hpp"
+#include "Starfield.hpp"
 #include <memory>
 
 enum class EffectType {

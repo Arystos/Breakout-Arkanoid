@@ -87,6 +87,8 @@ void Entity_Ball::update(float dt) {
 
     if (trail.enabled) updateTrail(dt);
     
+    std::cout << glm::length(velocity) << std::endl;
+    
 }
 
 void Entity_Ball::render(SDL_Renderer *renderer) {

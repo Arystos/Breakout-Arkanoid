@@ -7,10 +7,14 @@
 #include "StateGameOver.hpp"
 #include "State_Win.hpp"
 #include "State_MainMenu.hpp"
+#include "Starfield.hpp"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <random>
+
+Starfield::Params sp;
+Starfield starfield(sp);
 
 void State_Play::onEnter(Game &game) {
     // init level, paddle, ball etc. later
@@ -79,6 +83,8 @@ void State_Play::onEnter(Game &game) {
     UI::BuildLabel(renderer, livesTitle, livesLabel.text, font, livesColor, UI::AlignH::Left);
     livesTitle.dst.x = 50;
     livesTitle.dst.y = 5;
+
+    starfield.setViewportSize(game.PlayableWidth(), game.PlayableHeight());
 }
 
 void State_Play::handleInput(Game &game, const SDL_Event &event) {
@@ -125,6 +131,8 @@ void State_Play::update(Game &game, float dt) {
     balls.erase(std::remove_if(balls.begin(), balls.end(),
                                [](auto& b){
                                    return b == nullptr; }), balls.end());
+
+    starfield.update(dt);
                                    
     if (paddle && paddle->toBeDestroyed) paddle.reset();
     bricks.erase(std::remove_if(bricks.begin(), bricks.end(),
@@ -185,6 +193,8 @@ void State_Play::render(Game &game) {
     SDL_Rect box{40, 40, game.PlayableWidth(), game.PlayableHeight() };
     SDL_SetRenderDrawColor(renderer, 60, 60, 60, 255);
     SDL_RenderDrawRect(renderer, &box);
+
+    starfield.render(renderer);
 
     // win screen
     if (winTitle.visible) {

@@ -21,7 +21,7 @@ void Entity_PowerUp::update(float dt) {
     
     position.y += fallSpeed * dt; // move downwards
     
-    if (position.y > float(game.Height())) {
+    if (position.y > float(game.BottomBorder())) {
         toBeDestroyed = true;
         return;
     }

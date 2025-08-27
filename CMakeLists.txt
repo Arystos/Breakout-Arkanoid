@@ -31,6 +31,7 @@ set(BREAKOUT_SRC
         include/TimerManager.hpp
         src/State_Win.cpp
         include/State_Win.hpp
+        include/Starfield.hpp
 )
 
 add_executable(breakout ${BREAKOUT_SRC})
