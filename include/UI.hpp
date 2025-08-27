@@ -16,6 +16,7 @@ namespace UI {
         std::string text;          // testo UTF-8
         SDL_Texture* tex = nullptr;// texture generata da TTF
         SDL_Rect dst{0,0,0,0};     // posizione e dimensioni sullo schermo
+        SDL_Rect container{0,0,0,0};
         SDL_Color color{255,255,255,255};
         TTF_Font* font = nullptr;
         AlignH align = AlignH::Left;
@@ -85,6 +86,8 @@ namespace UI {
     bool BuildButton(SDL_Renderer* r, Button& B, const std::string& text, TTF_Font* font,
                      SDL_Color textColor,
                      int x, int y, int containerW = 0, bool centerX = false);
+
+    bool SetLabelText(SDL_Renderer* r, Label& L, const std::string& text, SDL_Color color);
 
     // Imposta posizione del pulsante. Se centerX è true centra orizzontalmente in containerW.
     void SetButtonPosition(Button& B, int x, int y, int containerW = 0, bool centerX = false);

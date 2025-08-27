@@ -30,6 +30,7 @@ private:
         std::string text;
         SDL_Texture *tex = nullptr;
         SDL_Rect dst{0, 0, 0, 0};
+        SDL_Rect container{0,0,0,0};
     };
     Label titleText{"You won"};
     Label msgText{"I have no more levels, I guess you are really good"};

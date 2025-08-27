@@ -41,24 +41,58 @@ namespace UI {
 
     bool BuildLabel(SDL_Renderer* r, Label& L, const std::string& text, TTF_Font* font, SDL_Color color, AlignH align) {
         if (!r || !font) return false;
-        // Libera texture precedente se presente
-        if (L.tex) { 
-            SDL_DestroyTexture(L.tex); L.tex = nullptr; 
-            std::cout << "Destroyed old label texture\n";
+        // Se nulla è cambiato, riusa la texture
+        if (L.tex && L.font == font && L.text == text
+            && L.color.r == color.r && L.color.g == color.g
+            && L.color.b == color.b && L.color.a == color.a) {
+            L.align = align;
+            if (L.container.w == 0 && L.container.h == 0) L.container = L.dst;
+            return true;
         }
+
+        if (L.tex) { SDL_DestroyTexture(L.tex); L.tex = nullptr; }
+
         L.text  = text;
         L.font  = font;
         L.color = color;
         L.align = align;
 
-        // Crea nuova texture
         L.tex = MakeText(r, font, text, color);
         if (!L.tex) return false;
 
-        // Aggiorna dimensioni
-        int w=0, h=0; querySize(L.tex, w, h);
-        L.dst.w = w;
-        L.dst.h = h;
+        int w = 0, h = 0;
+        querySize(L.tex, w, h);
+        L.dst.w = w; L.dst.h = h;              // nessuno scaling via dst
+        if (L.container.w == 0 && L.container.h == 0)
+            L.container = L.dst;               // default al proprio rect
+
+        return true;
+    }
+
+    // Aggiorna solo il testo/colore. Non ricrea se invariato.
+    bool SetLabelText(SDL_Renderer* r, Label& L, const std::string& text, SDL_Color color) {
+        if (!r || !L.font) return false;
+
+        if (L.tex && L.text == text
+            && L.color.r == color.r && L.color.g == color.g
+            && L.color.b == color.b && L.color.a == color.a) {
+            return true;
+        }
+
+        if (L.tex) { SDL_DestroyTexture(L.tex); L.tex = nullptr; }
+
+        L.text = text;
+        L.color = color;
+
+        L.tex = MakeText(r, L.font, text, color);
+        if (!L.tex) return false;
+
+        int w = 0, h = 0;
+        querySize(L.tex, w, h);
+        L.dst.w = w; L.dst.h = h;
+        if (L.container.w == 0 && L.container.h == 0)
+            L.container = L.dst;
+
         return true;
     }
 

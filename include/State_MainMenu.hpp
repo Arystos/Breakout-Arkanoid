@@ -26,6 +26,7 @@ private:
         std::string text;
         SDL_Texture* tex = nullptr;
         SDL_Rect dst{0,0,0,0};
+        SDL_Rect container{0,0,0,0};
     };
     Label titleLbl{"Breakout"};
     std::vector<Label> itemLbls;

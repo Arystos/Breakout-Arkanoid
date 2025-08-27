@@ -49,22 +49,20 @@ void State_Play::onEnter(Game &game) {
     // init UI labels
     auto* renderer = game.getRenderer();
     UI::BuildLabel(renderer, winTitle, wonLabel.text, font, titleColor, UI::AlignH::Center);
-    winTitle.dst.w *= 2;
-    winTitle.dst.h *= 2;
     winTitle.dst.x = (game.Width() - winTitle.dst.w) / 2; // center horizontally
     winTitle.dst.y = game.Height() / 3;
-    
+
     UI::BuildLabel(renderer, powerUpTitle, powerUpLabel.text, font, titleColor, UI::AlignH::Center);
-    powerUpTitle.dst.w *= 1.5;
-    powerUpTitle.dst.h *= 1.5;
     powerUpTitle.dst.x = (game.Width() - powerUpTitle.dst.w) / 2; // center horizontally
     powerUpTitle.dst.y = game.Height() / 1.6f;
+
+    UI::BuildLabel(renderer, messageTitle, messageLabel.text, font, textColor, UI::AlignH::Left);
+    messageTitle.dst.x = (game.Width() - powerUpTitle.dst.w) / 2; // center horizontally
+    messageTitle.dst.y = game.Height() / 1.6f;
     
-    UI::BuildLabel(renderer, messageTitle, messageLabel.text, font, textColor, UI::AlignH::Center);
-    messageTitle.dst.w *= 1.2;
-    messageTitle.dst.h *= 1.2;
-    messageTitle.dst.x = (game.Width() - messageTitle.dst.w) / 2; // center horizontally
-    messageTitle.dst.y = game.Height() / 1.2f;
+    UI::BuildLabel(renderer, livesTitle, livesLabel.text, font, livesColor, UI::AlignH::Left);
+    livesTitle.dst.x = 50;
+    livesTitle.dst.y = 5;
 }
 
 void State_Play::handleInput(Game &game, const SDL_Event &event) {
@@ -184,18 +182,21 @@ void State_Play::render(Game &game) {
 
     // Power-up title
     if (powerUpLabel.visible) {
-    UI::BuildLabel(renderer, powerUpTitle, powerUpLabel.text, font, titleColor, UI::AlignH::Center);
-    powerUpTitle.dst.w *= 1.5;
-    powerUpTitle.dst.h *= 1.5;
-    powerUpTitle.dst.x = (game.Width() - powerUpTitle.dst.w) / 2; // center horizontally
-    powerUpTitle.dst.y = game.Height() / 1.6f;
-    UI::DrawLabel(renderer, powerUpTitle);
+        UI::SetLabelText(renderer, powerUpTitle, powerUpLabel.text, titleColor);
+        powerUpTitle.dst.x = (game.Width() - powerUpTitle.dst.w) / 2;
+        powerUpTitle.dst.y = game.Height() / 1.6f;
+        UI::DrawLabel(renderer, powerUpTitle);
+    }
+
+    if (livesTitle.visible && playerLives > 0) {
+        UI::SetLabelText(renderer, livesTitle, "Lives: " + std::to_string(playerLives), livesColor);
+        livesTitle.dst.x = 50;
+        livesTitle.dst.y = 5;
+        UI::DrawLabel(renderer, livesTitle);
     }
     
     if (playerLives > 0) {
-        livesLabel.text = "Lives: " + std::to_string(playerLives);
-        UI::BuildLabel(renderer, livesTitle, livesLabel.text, font, livesColor, UI::AlignH::Left);
-        // draw lives on top-left corner
+        UI::SetLabelText(renderer, livesTitle, "Lives: " + std::to_string(playerLives), livesColor);
         livesTitle.dst.x = 50;
         livesTitle.dst.y = 5;
         UI::DrawLabel(renderer, livesTitle);

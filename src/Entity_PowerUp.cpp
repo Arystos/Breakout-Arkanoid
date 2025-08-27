@@ -69,6 +69,7 @@ void Entity_PowerUp::onCollision(Entity &other) {
 }
 
 const std::string &Entity_PowerUp::typeToString() {
+    // TODO: improve with map or array
     return (type == PowerUpType::ExpandPaddle) ? "Expand Paddle" :
            (type == PowerUpType::ShrinkPaddle) ? "Shrink Paddle" :
            (type == PowerUpType::MultiBall) ? "Multi Ball" :

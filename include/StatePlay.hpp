@@ -64,7 +64,8 @@ private:
     struct Label {
         std::string text;
         SDL_Texture *tex = nullptr;
-        SDL_Rect dst{0, 0, 0, 0};
+        SDL_Rect dst{0, 0, 0, 0}; // x, y, w, h
+        SDL_Rect container{0, 0, 0, 0}; // for alignment
         bool visible{false};
     };
     Label wonLabel{"Level Complete!"};
