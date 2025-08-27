@@ -51,6 +51,9 @@ public:
     int LevelIndex() const { return levelIndex; }
     int IncrementLevelIndex() { return ++levelIndex; }
     int SetLevelIndex(int index) { levelIndex = index; return levelIndex; }
+    
+    float CurrentFPS() const { return currentFPS; }
+    float FPSCap() const { return FPS; }
 
     // vector of power-up tags
     std::vector<std::string> activePowerUpTags{
@@ -84,6 +87,7 @@ private:
     int height = 600; // Default height
     //AssetManager assetManager;
     float FPS = 60.0f; // Frames per second
+    float currentFPS = 0.0f;
     int ballCount = 0; // current number of balls in play
     int levelIndex; // current level index
     int ballBounces = 0; // total ball bounces

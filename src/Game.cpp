@@ -128,6 +128,7 @@ void Game::run() {
             UI::BuildLabel(renderer, fpsLabel, fpsText, uiFont_, fpsColor, UI::AlignH::Center);
             UI::DrawLabel(renderer, fpsLabel);
         }
+        currentFPS = 1.0f / dt;
         
     }
     

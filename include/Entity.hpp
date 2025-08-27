@@ -8,6 +8,10 @@ struct Color {
     Uint8 r, g, b, a;
 };
 
+struct ColorRGB {
+    Uint8 r, g, b;
+};
+
 struct SDL_Deleter { 
     void operator()(SDL_Texture* t) const { if (t) SDL_DestroyTexture(t); } 
 };

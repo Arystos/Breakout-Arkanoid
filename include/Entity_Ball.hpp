@@ -10,6 +10,7 @@
 #include "Entity_Brick.hpp"
 #include "Game.hpp"
 #include <SDL.h>
+#include <deque>
 
 class Entity_Ball : public Entity {
 public:
@@ -38,6 +39,8 @@ public:
     void Release();
 
     TextureUPtr texture;
+
+    void enableTrail(float seconds);
     
 private:
     float radius = 10.0f; // default radius
@@ -48,6 +51,35 @@ private:
     Game& game = Game::getInstance();
     State* currentState{};
     Entity_Paddle* paddle{nullptr}; // reference to paddle for collision
+
+    void updateTrail(float dt);
+    void renderTrail(SDL_Renderer* renderer);
+    void TrailEnable(float seconds);
+    void TrailStopEmitting();
+
+    struct TrailNode {
+        glm::vec2 pos;   // top-left della ball al sample
+        float age;  // secondi da quando è stato campionato
+    };
+    
+    struct TrailInfo {
+        std::deque<TrailNode> trailNodes;
+        float lifetime = 0.25f;   // durata scia totale 0.25f
+        int max = 12;       // numero massimo di afterimage
+        float sampleDt = 0.016f;  // ogni quanti secondi campionare (~60Hz)
+        float timer = 0.f; // timer for sampling
+        float acc = 0.f; // accumulator for sampling
+        bool enabled = false; // enable or disable trail
+        bool emitting = false; // if true, keep emitting new trail nodes
+        // Trail selection
+        float trailBaseScale = 0.95f;  // scala iniziale degli afterimage (<1 per farli già più piccoli della palla)
+        float trailMinScale  = 0.1f;  // scala minima a fine vita (più piccolo)
+        float trailScalePow  = 0.1f;   // curva di riduzione (più alto = restringe più in fretta)
+        float trailAlphaPow  = 1.3f;   // curva di alpha
+        Uint8 trailMaxAlpha  = 200;    // alpha massimo degli afterimage
+    } trail;
+    TrailInfo& getTrail() { return trail; }
+    
 };
 
 

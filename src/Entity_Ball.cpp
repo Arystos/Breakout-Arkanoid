@@ -84,10 +84,14 @@ void Entity_Ball::update(float dt) {
 
         onCollision(*entity);
     }
+
+    if (trail.enabled) updateTrail(dt);
     
 }
 
 void Entity_Ball::render(SDL_Renderer *renderer) {
+    if (!active) return;
+    
     // Draw the ball as a filled circle
     SDL_Rect rect{(int)position.x, (int)position.y, (int)(radius*2), (int)(radius*2)};
     const int padding = 2;
@@ -98,6 +102,9 @@ void Entity_Ball::render(SDL_Renderer *renderer) {
         SDL_RenderCopy(renderer, texture.get(), nullptr, &visualRect); // render the texture
         
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+    // render trail first
+    if (trail.enabled) renderTrail(renderer);
 }
 
 void Entity_Ball::onCollision(Entity &entity) {
@@ -119,16 +126,28 @@ void Entity_Ball::onCollision(Entity &entity) {
         
         // new velocity and direction
         float speed = glm::length(velocity);
-        velocity.x = speed * glm::sin(bounceAngle);
-        velocity.y = -speed * glm::cos(bounceAngle);
+        glm::vec2 previousVelocity = velocity;
+        velocity = { speed * glm::sin(bounceAngle), -speed * glm::cos(bounceAngle) };
         // give some of the paddle_'s horizontal velocity to the ball
         velocity.x += paddle_->getVelocity().x * 0.5f; // fattore 0.5 regolabile
+        // if the new velocity is bigger than before of 10%
+        if (glm::length(velocity) > glm::length(previousVelocity) * 1.1f &&
+            game.BallSpeedModifier() >= 1.0f) // only if not slowed down
+        {
+            TrailEnable(0.25f);
+            auto t = game.timerManager.create(
+                    0.25f, false, "ball_trail", {},
+                    [this](auto &&) { TrailStopEmitting(); }
+            );
+            (void)t;
+        }
         // clamp speed
         if (glm::length(velocity) > maxSpeed)
             velocity = glm::normalize(velocity) * maxSpeed;
         if (glm::length(velocity) < minSpeed)
             velocity = glm::normalize(velocity) * minSpeed;
         paddle_->onCollision(*this);
+        //enableTrail(0.25f); // enable trail for 0.25 seconds
         return;
     }
 #pragma endregion
@@ -192,4 +211,77 @@ Entity_Ball::~Entity_Ball() {
         texture = nullptr;
     }
      */
+}
+
+void Entity_Ball::updateTrail(float dt) {
+    if (!trail.enabled) return;
+
+    if (trail.emitting) {
+        trail.acc += dt;
+        while (trail.acc >= trail.sampleDt) {
+            trail.acc -= trail.sampleDt;
+            trail.trailNodes.push_front({ position, 0.f });
+            if ((int)trail.trailNodes.size() > trail.max) trail.trailNodes.pop_back();
+        }
+    }
+
+    for (auto& n : trail.trailNodes) n.age += dt;
+    while (!trail.trailNodes.empty() && trail.trailNodes.back().age > trail.lifetime)
+        trail.trailNodes.pop_back();
+
+    if (!trail.emitting && trail.trailNodes.empty())
+        trail.enabled = false;
+}
+
+void Entity_Ball::renderTrail(SDL_Renderer* r) {
+    if (!texture || trail.trailNodes.empty()) return;
+
+    for (int i = (int)trail.trailNodes.size() - 1; i >= 0; --i) {
+        const auto& n = trail.trailNodes[i];
+        float t = glm::clamp(n.age / trail.lifetime, 0.0f, 1.0f); // 0 nuovo -> 1 vecchio
+
+        // Alpha con curva
+        Uint8 alpha = (Uint8)(trail.trailMaxAlpha * glm::pow(1.0f - t, trail.trailAlphaPow));
+        SDL_SetTextureAlphaMod(texture.get(), alpha);
+
+        // Scala non lineare: parte da trailBaseScale e scende fino a trailMinScale*trailBaseScale
+        float s01   = trail.trailMinScale + (1.0f - trail.trailMinScale) * glm::pow(1.0f - t, trail.trailScalePow);
+        float scale = trail.trailBaseScale * s01;
+
+        // opzionale: leggero fattore per indice per accentuare il restringimento lungo la scia
+        float idxFactor = 1.0f - 0.08f * (float)i;              // 8% per nodo
+        scale = glm::max(0.02f, scale * glm::max(0.6f, idxFactor)); // clamp minimo
+
+        int base = int(radius * 2);
+        int w = glm::max(1, int(base * scale));
+        int h = w;
+
+        float cx = n.pos.x + radius;
+        float cy = n.pos.y + radius;
+        SDL_Rect dst{ int(cx - w * 0.5f), int(cy - h * 0.5f), w, h };
+        SDL_RenderCopy(r, texture.get(), nullptr, &dst);
+    }
+    SDL_SetTextureAlphaMod(texture.get(), 255);
+}
+
+void Entity_Ball::enableTrail(float seconds) {
+    trail.enabled = true;
+    trail.emitting = true;
+    trail.acc = 0.f;
+    //trail.lifetime = seconds;
+    trail.trailNodes.clear();
+    //trail.timer = 0.f;
+}
+
+void Entity_Ball::TrailEnable(float seconds) {
+    trail.enabled  = true;
+    trail.emitting = true;
+    trail.trailNodes.clear();
+    trail.acc = 0.f;
+    trail.timer = 0.f;
+    trail.lifetime = seconds;
+}
+
+void Entity_Ball::TrailStopEmitting() {
+    trail.emitting = false;
 }
