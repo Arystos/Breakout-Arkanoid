@@ -6,6 +6,7 @@
 #include "State_Pause.hpp"
 #include "StateGameOver.hpp"
 #include "State_Win.hpp"
+#include "State_MainMenu.hpp"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -17,26 +18,31 @@ void State_Play::onEnter(Game &game) {
     
     State::onEnter(game);
 
-    // acttivate the paddle
+    // init paddle
     paddle->active = true;
-    // spawn a ball
+    
+    // init ball
+    game.setBallSpeedModifier(1.0f); // reset ball speed modifier
     spawnBall();
 
     // load level
     game.IncrementLevelIndex();
     
     std::cout << "Loading level " << game.LevelIndex() << std::endl;
-    if (game.LevelIndex() < (int)levels.size()) {
+    if (game.LevelIndex() < (int)levels.size()) { // valid level index
         const auto &next = levels[game.LevelIndex()];
         bricks = loadLevel(next.file, 50.0f, 50.0f);
-        // Set the window title to the level name
-        SDL_SetWindowTitle(game.getWindow(), next.name.c_str());
-    } else if (game.LevelIndex() >= (int)levels.size()) {
+        SDL_SetWindowTitle(game.getWindow(), next.name.c_str()); // window title
+    } else if (game.LevelIndex() >= (int)levels.size()) { // no more levels
         game.pushState(std::make_unique<State_Win>());
         game.SetLevelIndex(0); // reset level index for next playthrough
         return;
+    } else {
+        // error loading level
+        std::cerr << "Error: Invalid level index " << game.LevelIndex() << std::endl;
+        game.changeState(std::make_unique<State_MainMenu>());
+        return;
     }
-    
     
     // Old implementation: load a single level from a text file
     //bricks = loadLevel("assets/grid.txt", 50.0f, 50.0f);
@@ -51,25 +57,25 @@ void State_Play::onEnter(Game &game) {
     
     // init UI labels
     auto* renderer = game.getRenderer();
+    // win title
     UI::BuildLabel(renderer, winTitle, wonLabel.text, font, titleColor, UI::AlignH::Center);
     winTitle.dst.x = (game.Width() - winTitle.dst.w) / 2; // center horizontally
     winTitle.dst.y = game.Height() / 3;
-
+    // power-up title
     UI::BuildLabel(renderer, powerUpTitle, powerUpLabel.text, font, titleColor, UI::AlignH::Center);
     powerUpTitle.dst.x = (game.Width() - powerUpTitle.dst.w) / 2; // center horizontally
     powerUpTitle.dst.y = game.Height() / 1.6f;
-
+    // message title
     UI::BuildLabel(renderer, messageTitle, messageLabel.text, font, textColor, UI::AlignH::Left);
     messageTitle.dst.x = (game.Width() - powerUpTitle.dst.w) / 2; // center horizontally
     messageTitle.dst.y = game.Height() / 1.6f;
-    
+    // lives title
     UI::BuildLabel(renderer, livesTitle, livesLabel.text, font, livesColor, UI::AlignH::Left);
     livesTitle.dst.x = 50;
     livesTitle.dst.y = 5;
 }
 
 void State_Play::handleInput(Game &game, const SDL_Event &event) {
-    // Handle input events for the play state
     if (event.type == SDL_KEYDOWN)  {
         switch (event.key.keysym.scancode) {
             case SDL_SCANCODE_ESCAPE:
@@ -129,6 +135,7 @@ void State_Play::update(Game &game, float dt) {
 
     // Lost Condition
     if (game.getBallCount() <= 0) {
+        // spawn a ball after a delay of 2 seconds
         static float respawnTimer = 0.0f;
         respawnTimer += dt;
         if (respawnTimer > 2.0f) {
@@ -136,21 +143,31 @@ void State_Play::update(Game &game, float dt) {
             // spawn a new ball
             spawnBall();
         }
+        
     }
     
     // Win Condition
     // if the bricks are empty or there are only indestructible bricks left
     if (bricks.empty() ||
         std::all_of(bricks.begin(), bricks.end(), [](const auto& b){ 
-            return b->type == BrickType::Indestructible; })) 
-    {
+            return b->type == BrickType::Indestructible; })) {
+        // stop all balls
         for (auto& ball : balls) {
             // set ball velocity to zero and deactivate
             if (ball && ball->active)
                 ball->velocity = {0.0f, 0.0f};
         }
-        winTitle.visible = true;
+        winTitle.visible = true; // show win title
         // delay a bit and then go to next level or restart
+        uint64_t t = game.timerManager.create(
+                3.0f, false, "next_level", {},
+                [&game](auto &&tag) {
+                    (void)tag;
+                    // go to next level
+                    game.changeState(std::make_unique<State_Play>());
+                }
+        ); t = t;
+        /*
         static float winTimer = 0.0f;
         winTimer += dt;
         if (winTimer > 3.0f) {
@@ -158,13 +175,8 @@ void State_Play::update(Game &game, float dt) {
             // go to next level
             game.changeState(std::make_unique<State_Play>());
         }
-        // 
+         */
         bricks.clear(); // clear any remaining indestructible bricks for next level
-    }
-    
-    
-    if (bricks.empty()) {
-        
     }
 }
 

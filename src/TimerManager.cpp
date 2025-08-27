@@ -53,10 +53,20 @@ void TimerManager::stopByTag(const char *string, std::any payload) {
         if (t.tag == string && t.payload.type() == typeid(std::string)) {
             if (std::any_cast<std::string>(t.payload) == std::any_cast<std::string>(payload)) {
                 t.stop();
+                if (t.onEnd) t.onEnd(t.getId()); // 
             }
         }
     }
+}
 
+void TimerManager::endByTag(const char *string, std::any payload) {
+    for (auto &t : timers_) {
+        if (t.tag == string && t.payload.type() == typeid(std::string)) {
+            if (std::any_cast<std::string>(t.payload) == std::any_cast<std::string>(payload)) {
+                t.end();
+            }
+        }
+    }
 }
 
 void TimerManager::pauseAll() {
@@ -69,6 +79,10 @@ void TimerManager::resumeAll() {
 
 void TimerManager::stopAll() {
     for (auto &t : timers_) t.stop();
+}
+
+void TimerManager::endAll() {
+    for (auto &t : timers_) t.end();
 }
 
 bool TimerManager::isTagActive(const std::string &tag, std::any payload) const {

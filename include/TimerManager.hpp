@@ -12,11 +12,12 @@
 
 class TimerManager {
 public:
+    // Create a timer with duration in seconds, optional repeat, tag, payload and end callback
     uint64_t create(float duration, bool repeat = false, const std::string& tag = {},
                     std::any payload = {}, Timer::EndCallback onEnd = nullptr);
-    // Simple delay (no tag, no payload, no callback)
-    uint64_t  delay(float duration) {
-        return create(duration, false, "delay", {}, nullptr);
+    // Simple delay function with optional callback
+    void delay(float seconds, const std::function<void()>& cb = nullptr) {
+        create(seconds, false, {}, {}, [cb](uint64_t){ if (cb) cb(); });
     }
 
     void update(float dt);
@@ -27,10 +28,12 @@ public:
     std::vector<Timer> Timers () const { return timers_; }
 
     void stopByTag(const char *string, std::any payload);
+    void endByTag(const char *string, std::any payload); // with onEnd callback
 
     void pauseAll();
     void resumeAll();
     void stopAll();
+    void endAll(); // with onEnd callback
     
     bool isTagActive(const std::string& tag, std::any payload) const;
 

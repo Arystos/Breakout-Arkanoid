@@ -20,7 +20,8 @@ public:
 
     // Avvia il timer. duration in secondi. repeat = true per ripetere.
     void start(uint64_t id, float durationSeconds, bool repeat = false);
-    void stop();
+    void stop(); // stop without onEnd callback
+    void end(); // stop with onEnd callback
     void pause();
     void resume();
     void update(float dt);

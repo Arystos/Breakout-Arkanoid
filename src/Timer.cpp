@@ -23,6 +23,13 @@ void Timer::stop() {
     elapsed_ = 0.f;
 }
 
+void Timer::end() {
+    running_ = false;
+    paused_ = false;
+    elapsed_ = duration_;
+    if (onEnd) onEnd(id_);
+}
+
 void Timer::pause() {
     if (running_) paused_ = true;
 }

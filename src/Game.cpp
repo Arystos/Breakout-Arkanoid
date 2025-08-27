@@ -127,7 +127,7 @@ void Game::run() {
             std::string fpsText = "FPS: " + std::to_string(static_cast<int>(1.0f / dt));
             UI::BuildLabel(renderer, fpsLabel, fpsText, uiFont_, fpsColor, UI::AlignH::Center);
             UI::DrawLabel(renderer, fpsLabel);
-        } 
+        }
         
     }
     

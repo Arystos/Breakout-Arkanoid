@@ -147,11 +147,6 @@ void Entity_Paddle::onCollision(Entity &other) {
                         Game::getInstance().getCurrentState()))
                     for (auto &ball: playState->getBalls()) {
                         // slow down
-                        /*
-                        ball->setMaxSpeed(ball->MaxSpeed() / ballSpeedModifier);
-                        ball->setMinSpeed(ball->MinSpeed() / ballSpeedModifier);
-                        ball->velocity /= ballSpeedModifier;
-                         */
                         Game::getInstance().setBallSpeedModifier(
                                 Game::getInstance().BallSpeedModifier() / ballSpeedModifier);
                         // Start Timer
@@ -171,11 +166,6 @@ void Entity_Paddle::onCollision(Entity &other) {
                         Game::getInstance().getCurrentState()))
                     for (auto &ball: playState->getBalls()) {
                         // speed up
-                        /*
-                        ball->setMaxSpeed(ball->MaxSpeed() * ballSpeedModifier);
-                        ball->setMinSpeed(ball->MinSpeed() * ballSpeedModifier);
-                        ball->velocity *= ballSpeedModifier;
-                         */
                         Game::getInstance().setBallSpeedModifier(
                                 Game::getInstance().BallSpeedModifier() * ballSpeedModifier);
                         // Start Timer
@@ -192,7 +182,7 @@ void Entity_Paddle::onCollision(Entity &other) {
             case PowerUpType::StickyPaddle: {
                 sticky = true;// get the name of this paddle instance
                 // If the timer is already running, reset it
-                Game::getInstance().timerManager.stopByTag("powerup_sticky", {});
+                Game::getInstance().timerManager.endByTag("powerup_sticky", {});
                 uint64_t t = Game::getInstance().timerManager.create(
                         powerUpDuration, false, "powerup_sticky", {},
                         [this](auto && tag) { 
@@ -212,15 +202,14 @@ void Entity_Paddle::onCollision(Entity &other) {
             playState->SetPowerUpLabelText(powerUp->typeToString());
             playState->SetPowerUpLabelVisible(true);
             // stop if any previous timer is running
-            Game::getInstance().timerManager.stopByTag("powerup_label", {});
+            Game::getInstance().timerManager.endByTag("powerup_label", {});
             // Start a timer to hide the label after a short duration
             uint64_t t = Game::getInstance().timerManager.create(
                     powerUpDuration, false, "powerup_label", {},
                     [this](auto &&tag) {
                         onPowerUpCollectedTimerEnd(std::forward<decltype(tag)>(tag));
                     }
-            );
-            t = t; // avoid unused variable warning
+            ); t = t;
         }
     }
 }
