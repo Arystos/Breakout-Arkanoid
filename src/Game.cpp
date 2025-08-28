@@ -97,7 +97,6 @@ void Game::run() {
         float dt = (frameStart - now) / static_cast<float>(SDL_GetPerformanceFrequency());
         now = frameStart;
         if (dt > 0.1f) dt = 0.1f; // avoid spiral of death (dt too large)
-        timerManager.update(dt); // update timers
         
         // Input handling
         SDL_Event event;
@@ -121,6 +120,8 @@ void Game::run() {
         
         // Calculate current FPS
         currentFPS = 1.0f / dt;
+
+        timerManager.update(dt); // update timers
     }
     
 }

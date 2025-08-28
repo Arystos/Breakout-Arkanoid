@@ -21,6 +21,7 @@ void Timer::stop() {
     running_ = false;
     paused_ = false;
     elapsed_ = 0.f;
+    onEnd = nullptr;
 }
 
 void Timer::end() {
@@ -28,6 +29,7 @@ void Timer::end() {
     paused_ = false;
     elapsed_ = duration_;
     if (onEnd) onEnd(id_);
+    onEnd = nullptr;
 }
 
 void Timer::pause() {
@@ -47,6 +49,7 @@ void Timer::update(float dt) {
             elapsed_ = std::fmod(elapsed_, duration_);
         } else {
             running_ = false;
+            onEnd = nullptr; // prevent multiple calls
         }
     }
 }

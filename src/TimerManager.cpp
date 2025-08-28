@@ -3,6 +3,7 @@
 //
 
 #include "TimerManager.hpp"
+#include "iostream"
 
 uint64_t TimerManager::create(float duration, bool repeat, const std::string& tag,
                               std::any payload, Timer::EndCallback onEnd) {
@@ -18,9 +19,7 @@ uint64_t TimerManager::create(float duration, bool repeat, const std::string& ta
 
 void TimerManager::update(float dt) {
     for (auto &t : timers_) t.update(dt);
-    // rimuovi i timer non running (non ripetuti) se vuoi
-    timers_.erase(std::remove_if(timers_.begin(), timers_.end(),
-                                 [](const Timer& x){ return !x.isRunning() && x.onEnd==nullptr; }), timers_.end());
+    flush(); // remove finished timers without onEnd callback
 }
 
 bool TimerManager::stop(uint64_t id) {
@@ -87,21 +86,18 @@ void TimerManager::endAll() {
 
 bool TimerManager::isTagActive(const std::string &tag, std::any payload) const {
     for (const auto &t : timers_) {
-        if (t.tag == tag) {
-            if (payload.has_value() && t.payload.has_value()) {
-                if (t.payload.type() == payload.type()) {
-                    if (t.payload.type() == typeid(std::string)) {
-                        if (std::any_cast<std::string>(t.payload) == std::any_cast<std::string>(payload)) {
-                            return t.isRunning();
-                        }
-                    } else {
-                        // Other types can be compared here as needed
-                    }
-                }
-            } else if (!payload.has_value() && !t.payload.has_value()) {
-                return t.isRunning();
+        if (t.tag == tag && t.payload.type() == typeid(std::string)) {
+            if (std::any_cast<std::string>(t.payload) == std::any_cast<std::string>(payload)) {
+                if (t.isRunning()) return true;
             }
         }
     }
     return false;
+}
+
+void TimerManager::flush() {
+    timers_.erase(std::remove_if(timers_.begin(), timers_.end(),
+                                 [](const Timer& t){
+                                     return !t.isRunning() && !t.onEnd;
+                                 }), timers_.end());
 }

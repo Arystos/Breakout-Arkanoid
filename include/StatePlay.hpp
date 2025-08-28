@@ -60,18 +60,11 @@ private:
     
     // Text rendering
     TTF_Font* font = nullptr;
-    struct Label {
-        std::string text;
-        SDL_Texture *tex = nullptr;
-        SDL_Rect dst{0, 0, 0, 0}; // x, y, w, h
-        SDL_Rect container{0, 0, 0, 0}; // for alignment
-        bool visible{false};
-    };
-    Label wonLabel{"Level Complete!"};
-    Label powerUpLabel{"Power_Up!"};
-    Label powerUpLabelInfo{"Power-up collected!"};
-    Label messageLabel{"Loading next level..."};
-    Label livesLabel{"Lives: 3"};
+    UI::Label wonLabel{"Level Complete!"};
+    UI::Label powerUpLabel{"Power_Up!"};
+    UI::Label powerUpLabelInfo{"Power-up collected!"};
+    UI::Label messageLabel{"Loading next level..."};
+    UI::Label livesLabel{"Lives: 3"};
     
     // UI
     UI::Label winTitle;

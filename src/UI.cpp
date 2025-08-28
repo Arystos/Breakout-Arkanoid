@@ -31,6 +31,7 @@ namespace UI {
 
     SDL_Texture* MakeText(SDL_Renderer* r, TTF_Font* f, const std::string& s, SDL_Color col) {
         if (!r || !f) return nullptr;
+        if (s.empty()) return nullptr;
         SDL_Surface* surf = TTF_RenderUTF8_Blended(f, s.c_str(), col);
         if (!surf) { SDL_Log("TTF_RenderUTF8_Blended: %s", TTF_GetError()); return nullptr; }
         SDL_Texture* tex = SDL_CreateTextureFromSurface(r, surf);

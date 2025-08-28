@@ -35,7 +35,10 @@ public:
     void stopAll();
     void endAll(); // with onEnd callback
     
+    void flush(); // remove all non-running timers without onEnd callback
+    
     bool isTagActive(const std::string& tag, std::any payload) const;
+    int size() const { return static_cast<int>(timers_.size()); }
 
 private:
     uint64_t nextId_{1};

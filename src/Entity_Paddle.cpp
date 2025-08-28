@@ -111,6 +111,7 @@ void Entity_Paddle::move(float dir, float deltaTime) {
 
 void Entity_Paddle::onCollision(Entity &other) {
     if (auto* powerUp = dynamic_cast<Entity_PowerUp*>(&other)) {
+        Game::getInstance().IncrementActivePowerUps();
         switch (powerUp->type) {
             case EffectType::MultiBall: // spawn an extra ball
                 if (auto *playState = dynamic_cast<State_Play *>(
@@ -205,8 +206,6 @@ void Entity_Paddle::onCollision(Entity &other) {
                 playState->SetPowerUpLabelInfoVisible(true);
             }
             
-            // stop if any previous timer is running
-            Game::getInstance().timerManager.endByTag("powerup_label", {});
             // Start a timer to hide the label after a short duration
             uint64_t t = Game::getInstance().timerManager.create(
                     powerUpDuration, false, "powerup_label", {},
@@ -256,15 +255,12 @@ void Entity_Paddle::onBallFastTimerEnd(uint64_t id, std::unique_ptr<Entity_Ball>
 
 void Entity_Paddle::onPowerUpCollectedTimerEnd(uint64_t id) {
     (void)id;
-    if (auto* playState = dynamic_cast<State_Play*>(Game::getInstance().getCurrentState())) {
-        // check if there are active timers for other power-ups
-        for (const auto& tag : Game::getInstance().activePowerUpTags) {
-            if (Game::getInstance().timerManager.isTagActive(tag, {})) {
-                break; // do not hide the label yet
-            }
+    // hide power-up label in the play state
+    Game::getInstance().DecrementActivePowerUps();
+    if (Game::getInstance().ActivePowerUps() <= 0) {
+        if (auto* playState = dynamic_cast<State_Play*>(Game::getInstance().getCurrentState())) {
+            playState->SetPowerUpLabelVisible(false);
+            playState->SetPowerUpLabelInfoVisible(false);
         }
-        // Hide power-up label
-        playState->SetPowerUpLabelVisible(false);
-        playState->SetPowerUpLabelInfoVisible(false);
-    };
+    }
 }

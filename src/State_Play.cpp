@@ -201,6 +201,8 @@ void State_Play::render(Game &game) {
         UI::DrawLabel(renderer, messageTitle);
         return; // skip rendering other entities
     }
+    
+    // Draw UI elements
 
     // Power-up title
     if (powerUpLabel.visible) {
