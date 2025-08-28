@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <any>
+#include <string>
 
 class Timer {
 public:
