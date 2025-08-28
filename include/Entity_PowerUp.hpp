@@ -6,19 +6,15 @@
 #define BREAKOUT_ENTITY_POWERUP_HPP
 
 #include "Entity.hpp"
+#include "EffectType.hpp"
 #include "Game.hpp"
-
-enum class PowerUpType { 
-    ExpandPaddle, ShrinkPaddle, MultiBall, SlowBall, FastBall,
-    StickyPaddle, Count
-};
 
 class Game;
 
 class Entity_PowerUp : public Entity {
 public:
     Entity_PowerUp();
-    PowerUpType type;
+    EffectType type;
     float fallSpeed{150.0f};
     void update(float dt) override;
     void render(SDL_Renderer* renderer) override;

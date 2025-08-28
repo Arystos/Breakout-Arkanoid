@@ -12,9 +12,9 @@ Entity_PowerUp::Entity_PowerUp() {
     size = {20.0f, 20.0f};
     // Randomly assign a power-up type
     static std::mt19937 rng{std::random_device{}()}; //generate random seed
-    std::uniform_int_distribution<int> dist(0, static_cast<int>(PowerUpType::Count) - 1);
-    type = static_cast<PowerUpType>(dist(rng));
-    //type = static_cast<PowerUpType>(5); // for testing
+    std::uniform_int_distribution<int> dist(0, static_cast<int>(EffectType::Count) - 1);
+    type = static_cast<EffectType>(dist(rng));
+    //type = static_cast<EffectType>(5); // for testing
 }
 
 void Entity_PowerUp::update(float dt) {

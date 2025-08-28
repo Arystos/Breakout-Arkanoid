@@ -5,6 +5,7 @@
 #include "Entity_Paddle.hpp"
 #include "Game.hpp"
 #include "Entity_PowerUp.hpp"
+#include "EffectType.hpp"
 #include "StatePlay.hpp"
 #include <algorithm>
 
@@ -111,12 +112,12 @@ void Entity_Paddle::move(float dir, float deltaTime) {
 void Entity_Paddle::onCollision(Entity &other) {
     if (auto* powerUp = dynamic_cast<Entity_PowerUp*>(&other)) {
         switch (powerUp->type) {
-            case PowerUpType::MultiBall: // spawn an extra ball
+            case EffectType::MultiBall: // spawn an extra ball
                 if (auto *playState = dynamic_cast<State_Play *>(
                         Game::getInstance().getCurrentState()))
                     playState->spawnBall();
                 break;
-            case PowerUpType::ExpandPaddle: {
+            case EffectType::ExpandPaddle: {
                 size.x *= sizeModifier; // expand paddle size
                 // move slightly to left to keep centre position
                 position.x -= (size.x * (sizeModifier - 1.0f)) / 2.0f;
@@ -129,7 +130,7 @@ void Entity_Paddle::onCollision(Entity &other) {
                 );(void)t;
                 break;
             }
-            case PowerUpType::ShrinkPaddle: {
+            case EffectType::ShrinkPaddle: {
                 size.x /= sizeModifier; // shrink paddle size
                 // move slightly to right to keep centre position
                 position.x += (size.x * (sizeModifier - 1.0f)) / 2.0f;
@@ -142,7 +143,7 @@ void Entity_Paddle::onCollision(Entity &other) {
                 );(void)t;
                 break;
             }
-            case PowerUpType::SlowBall: {
+            case EffectType::SlowBall: {
                 // TODO: slow down ball speed
                 if (auto *playState = dynamic_cast<State_Play *>(
                         Game::getInstance().getCurrentState()))
@@ -160,7 +161,7 @@ void Entity_Paddle::onCollision(Entity &other) {
                     }
                 break;
             }
-            case PowerUpType::FastBall: {
+            case EffectType::FastBall: {
                 // TODO: speed up ball speed
                 if (auto *playState = dynamic_cast<State_Play *>(
                         Game::getInstance().getCurrentState()))
@@ -178,7 +179,7 @@ void Entity_Paddle::onCollision(Entity &other) {
                     }
                 break;
             }
-            case PowerUpType::StickyPaddle: {
+            case EffectType::StickyPaddle: {
                 sticky = true;// get the name of this paddle instance
                 // If the timer is already running, reset it
                 Game::getInstance().timerManager.endByTag("powerup_sticky", {});
@@ -199,7 +200,7 @@ void Entity_Paddle::onCollision(Entity &other) {
             playState->SetPowerUpLabelVisible(true);
             
             // Info text for specific power-ups
-            if (powerUp->type == PowerUpType::StickyPaddle) {
+            if (powerUp->type == EffectType::StickyPaddle) {
                 playState->SetPowerUpLabelInfoText("Press Space to release the ball");
                 playState->SetPowerUpLabelInfoVisible(true);
             }

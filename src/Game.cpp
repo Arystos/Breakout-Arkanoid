@@ -3,43 +3,41 @@
 #include "State_MainMenu.hpp"
 #include <iostream>
 
-static Uint64 nowPerf() { return SDL_GetPerformanceCounter(); } // current time in ticks
-
 Game::Game() = default;
 
 Game::~Game() {
     states.clear(); // Clear all states
-    if (uiFont_) TTF_CloseFont(uiFont_); uiFont_ = nullptr;
-    if (renderer) {
-        SDL_SetRenderTarget(renderer, nullptr); // reset target se ne avevi uno
-        SDL_RenderFlush(renderer);              // svuota la coda
-        SDL_RenderPresent(renderer);            // opzionale, chiude il frame
-        SDL_DestroyRenderer(renderer);
-        renderer = nullptr;
-    }
+    if (!uiFont_) return;
+    if (!renderer) return;
+    if (!window) return;
+    
+    TTF_CloseFont(uiFont_); uiFont_ = nullptr;
 
-    if (window) SDL_DestroyWindow(window); window = nullptr;
+    // reset render target
+    SDL_SetRenderTarget(renderer, nullptr);
+    SDL_RenderFlush(renderer);
+    SDL_RenderPresent(renderer);
+    SDL_DestroyRenderer(renderer);
+    renderer = nullptr;
+
+    // Destroy window and quit SDL
+    SDL_DestroyWindow(window); window = nullptr;
     TTF_Quit();
     SDL_Quit();
 }
 
 #pragma region Initialization and Cleanup
-
 bool Game::init(const char *title, bool fullscreen) {
+    
+    SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "0"); // High-DPI ON
 
-    // Set high-DPI support
-    SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "0");          // High-DPI ON
-
-    // crea la window CON high-DPI
+    // create window
     Uint32 flags = SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI;
     if (fullscreen) flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-
     window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
-    if (!window) {
-        SDL_Log("Could not create window: %s", SDL_GetError());
-        return false;
-    }
+    if (!window) { SDL_Log("Could not create window: %s", SDL_GetError()); return false;}
 
+    // create renderer
     renderer = SDL_CreateRenderer(
             window, -1, SDL_RENDERER_ACCELERATED // Use hardware acceleration
              | SDL_RENDERER_PRESENTVSYNC // Enable VSync
@@ -50,19 +48,18 @@ bool Game::init(const char *title, bool fullscreen) {
         SDL_DestroyWindow(window);
         return false;
     }
-
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0"); // niente filtro
-
-// reset di stato renderer
+    
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0"); // no linear filtering
+    
+    // reset scale and viewport
     SDL_RenderSetScale(renderer, 1.0f, 1.0f);
     SDL_RenderSetViewport(renderer, nullptr);
-
-// usa una logical size fissa per il layout
-    const int designW = 1280;
-    const int designH = 720;
+    
+    // set logical size to handle resolution independence
     SDL_RenderSetLogicalSize(renderer, width, height);
     SDL_RenderSetIntegerScale(renderer, SDL_TRUE); // niente blur
 
+    // Initialize SDL and TTF
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
         return false;
@@ -76,25 +73,31 @@ bool Game::init(const char *title, bool fullscreen) {
     uiFont_ = TTF_OpenFont("assets/fonts/Roboto-Regular.ttf", 28);
     if (!uiFont_) { SDL_Log("TTF_OpenFont: %s", TTF_GetError()); return false; }
 
+    // Initialization successful
     running = true;
     return running;
 }
+#pragma endregion
 
-// Game.cpp (simplified run loop)
+#pragma region Main Game Loop
 void Game::run() {
     std::cout << "Game is running..." << std::endl;
     
+    // Frame timing and FPS calculation
     const float targetFrameTime = 1.0f / FPS;
     Uint64 now = SDL_GetPerformanceCounter();
 
     // Main menu state
     Game::getInstance().changeState(std::make_unique<State_MainMenu>());
     
+    // Main game loop
     while (running) {
+        // Calculate delta time
         Uint64 frameStart = SDL_GetPerformanceCounter();
         float dt = (frameStart - now) / static_cast<float>(SDL_GetPerformanceFrequency());
         now = frameStart;
         if (dt > 0.1f) dt = 0.1f; // avoid spiral of death (dt too large)
+        timerManager.update(dt); // update timers
         
         // Input handling
         SDL_Event event;
@@ -102,11 +105,6 @@ void Game::run() {
             if (event.type == SDL_QUIT) { quit(); break; }
             if (!states.empty()) states.back()->handleInput(*this, event);
         }
-
-        timerManager.update(dt);
-        
-        // Update timers
-        //updateTimers(dt);
         
         // Update (if any state is active)
         if (!states.empty()) states.back()->update(*this, dt);
@@ -121,20 +119,11 @@ void Game::run() {
         float frameTime = (SDL_GetPerformanceCounter() - frameStart) / static_cast<float>(SDL_GetPerformanceFrequency());
         if (frameTime < targetFrameTime) SDL_Delay(static_cast<Uint32>((targetFrameTime - frameTime) * 1000.0f));
         
-        // TODO: show FPS in top left corner (for debugging)
-        auto *renderer = getRenderer();
-        if (renderer) {
-            std::string fpsText = "FPS: " + std::to_string(static_cast<int>(1.0f / dt));
-            UI::BuildLabel(renderer, fpsLabel, fpsText, uiFont_, fpsColor, UI::AlignH::Center);
-            UI::DrawLabel(renderer, fpsLabel);
-        }
+        // Calculate current FPS
         currentFPS = 1.0f / dt;
-        
     }
     
 }
-
-void Game::quit() { running = false; }
 
 #pragma endregion
 
@@ -165,5 +154,4 @@ State *Game::getCurrentState() {
     if (states.empty()) return nullptr;
     return states.back().get();
 }
-
 #pragma endregion

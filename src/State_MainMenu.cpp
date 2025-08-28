@@ -11,9 +11,15 @@ void State_MainMenu::onEnter(Game &game) {
     auto* renderer = game.getRenderer();
     auto* uiFont = game.uiFont();
 
+    
     if (game.LevelIndex() > 0) {
-        game.SetLevelIndex(game.LevelIndex() -1);
+        game.SetLevelIndex(0);
     }
+    game.setPlayerLives(3); // reset player lives
+    game.setBallCount(0); // reset ball count
+    game.setBallSpeedModifier(1.0f); // reset ball speed modifier
+    game.setBallBounces(0);
+    game.setTotalBallBounces(0);
 
     // Title
     UI::BuildLabel(renderer, title, "Breakout", uiFont, titleColor, UI::AlignH::Center);

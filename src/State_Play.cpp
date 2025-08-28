@@ -110,7 +110,6 @@ void State_Play::handleInput(Game &game, const SDL_Event &event) {
 
 void State_Play::update(Game &game, float dt) {
     (void)game; (void)dt; // Avoid unused parameter warnings
-    //deltaTime = dt;
     
     // Update paddle, ball etc.
     if (paddle && paddle->active) paddle->update(dt);
@@ -142,7 +141,7 @@ void State_Play::update(Game &game, float dt) {
                                   [](auto& p){
         return !p->active; }), powerUps.end());
 
-    if (playerLives <= 0) {
+    if (game.PlayerLives() <= 0) {
         game.changeState(std::make_unique<State_GameOver>());
         return;
     }
@@ -218,15 +217,15 @@ void State_Play::render(Game &game) {
         UI::DrawLabel(renderer, powerUpInfoTitle);
     }
 
-    if (livesTitle.visible && playerLives > 0) {
-        UI::SetLabelText(renderer, livesTitle, "Lives: " + std::to_string(playerLives), livesColor);
+    if (livesTitle.visible && game.PlayerLives() > 0) {
+        UI::SetLabelText(renderer, livesTitle, "Lives: " + std::to_string(game.PlayerLives()), livesColor);
         livesTitle.dst.x = 50;
         livesTitle.dst.y = 5;
         UI::DrawLabel(renderer, livesTitle);
     }
     
-    if (playerLives > 0) {
-        UI::SetLabelText(renderer, livesTitle, "Lives: " + std::to_string(playerLives), livesColor);
+    if (game.PlayerLives() > 0) {
+        UI::SetLabelText(renderer, livesTitle, "Lives: " + std::to_string(game.PlayerLives()), livesColor);
         livesTitle.dst.x = 50;
         livesTitle.dst.y = 5;
         UI::DrawLabel(renderer, livesTitle);

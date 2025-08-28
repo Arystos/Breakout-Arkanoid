@@ -22,11 +22,29 @@ public:
     // Singleton access
     static Game &getInstance() { static Game instance; return instance; }
 
+    // TimerManager
+    TimerManager timerManager;
+
 #pragma region Initialization and Cleanup
     bool init(const char* title, bool fullscreen);
     void run(); // Main game loop
-    void quit(); // Clean up and exit the game
-    
+    void quit() { running = false; } // Stop the game loop
+#pragma endregion
+
+#pragma region State Management
+    void changeState(std::unique_ptr<State> newState); // switch to a new state (replace current)
+    void pushState(std::unique_ptr<State> newState); // push a new state onto the stack (pause current)
+    void popState(); // pop the current state off the stack (resume previous)
+    State* getCurrentState(); // get a pointer to the current state
+#pragma endregion
+
+    SDL_Renderer* getRenderer() const { return renderer; }
+    SDL_Window* getWindow() const { return window; }
+    bool isRunning() const { return running; }
+    TTF_Font* uiFont() const { return uiFont_; }
+
+#pragma region Game Properties
+    // Game Window and borders
     int Width() const { return width; }
     int Height() const { return height; }
     int PlayableWidth() const { return playableWidth; }
@@ -36,41 +54,10 @@ public:
     int TopBorder() const { return tBorder; }
     int BottomBorder() const { return bBorder; }
     
-#pragma endregion
-
-#pragma region State Management
-    void changeState(std::unique_ptr<State> newState); // switch to a new state
-    void pushState(std::unique_ptr<State> newState); // push a new state onto the stack (pause current)
-    void popState(); // pop the current state off the stack (resume previous)
-    State* getCurrentState(); // get a pointer to the current state
-#pragma endregion
-
-    SDL_Renderer* getRenderer() const { return renderer; }
-    SDL_Window* getWindow() const { return window; }
-    bool isRunning() const { return running; }
-    
-    //AssetManager& assets();
-    TTF_Font* uiFont() const { return uiFont_; }
-    
+    // Ball 
     int BallCount() const { return ballCount; }
     int getBallCount() const { return ballCount; }
     int setBallCount(int count) { ballCount = count; return ballCount; }
-    int LevelIndex() const { return levelIndex; }
-    int IncrementLevelIndex() { return ++levelIndex; }
-    int SetLevelIndex(int index) { levelIndex = index; return levelIndex; }
-    
-    float CurrentFPS() const { return currentFPS; }
-    float FPSCap() const { return FPS; }
-
-    // vector of power-up tags
-    std::vector<std::string> activePowerUpTags{
-            "sticky_paddle",
-            "paddle_grow",
-            "paddle_shrink",
-            "ball_slow",
-            "ball_fast"
-    };
-    
     float BallSpeedModifier() const { return ballSpeedModifier; }
     float setBallSpeedModifier(float mod) { ballSpeedModifier = mod; return ballSpeedModifier; }
     int BallBounces() const { return ballBounces; }
@@ -79,8 +66,28 @@ public:
     int setTotalBallBounces(int count) { totalBallBounces = count; return totalBallBounces; }
     void resetBallBounces() { totalBallBounces = ballBounces; ballBounces = 0; }
     
-    // TimerManager
-    TimerManager timerManager;
+    // Level
+    int LevelIndex() const { return levelIndex; }
+    int IncrementLevelIndex() { return ++levelIndex; }
+    int SetLevelIndex(int index) { levelIndex = index; return levelIndex; }
+    
+    // Player lives
+    int PlayerLives() const { return playerLives; }
+    int setPlayerLives(int lives) { playerLives = lives; return playerLives; }
+    
+    // FPS
+    float CurrentFPS() const { return currentFPS; }
+    float FPSCap() const { return FPS; }
+
+    // Power-up tags
+    std::vector<std::string> activePowerUpTags{
+            "sticky_paddle",
+            "paddle_grow",
+            "paddle_shrink",
+            "ball_slow",
+            "ball_fast"
+    };
+#pragma endregion
 
 
 private:
@@ -106,14 +113,9 @@ private:
     int ballBounces = 0; // total ball bounces
     int totalBallBounces = 0; // all time ball bounces
     float ballSpeedModifier{1.0f};
+    int playerLives{3};
     
     // text rendering
-    TTF_Font* font = nullptr;
-    struct Label {
-        std::string text;
-        SDL_Texture *tex = nullptr;
-        SDL_Rect dst{0, 0, 0, 0};
-    };
     UI::Label fpsLabel;
     
     // color cache

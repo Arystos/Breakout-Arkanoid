@@ -15,10 +15,6 @@
 #include "Starfield.hpp"
 #include <memory>
 
-enum class EffectType {
-    ExpandPaddle, ShrinkPaddle, StickyPaddle, FastBall, SlowBall
-};
-
 class State_Play: public State {
 public:
     void handleInput(Game &game, const SDL_Event &event) override;
@@ -47,8 +43,6 @@ public:
     
     void SetPowerUpLabelVisible(bool v) { powerUpLabel.visible = v; }
     void SetPowerUpLabelInfoVisible(bool v) { powerUpLabelInfo.visible = v; }
-
-    int playerLives = 3;
 
 private:
     bool paused = false; // Flag to check if the game is paused

@@ -3,71 +3,59 @@ An arcade game in C++
 
 # Installation
 
-On windows
+## Windows
 Double click on the `setup_deps.bat` file to install the dependencies.
-
-Do not close the process until it finish.
-
-The download is finished when you see:
-CMake generation failed. Debug
-
-Click on Debug
-
-After regenerate the cmake 
+Do not close the process until it finish!
+You should see something like this at the end:
 ``` 
 All requested installations completed successfully in: 1.3 s
 ```
 
 If you close it earlier simply delete the directory named vcpkg and run again the script.
 
-Once downloaded put the following code in the terminal to build the project:
+You now should be able to run the project (F5 for debug or Ctrl+F5 for release)
+
+## MacOS
+Download the dependencies using homebrew
 ```bash
-cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT\scripts\buildsystems\vcpkg.cmake"
+brew install sdl2 sdl2_image sdl2_mixer sdl2_ttf
 ```
-
-Or you can simply click on the Info in the solution explorer
-Cmake generation not 
-
-After run this command int the terminal
+## Linux (Ubuntu/Debian) 
+Install the dependencies using apt-get
 ```bash
-rm -r -Force build
->> cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE="$PWD/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows
->> cmake --build build --config Debugvcpkg integrate install
+sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
+```
+Note: Linux has not been texted yet, if you encounter any issue please open an issue.
 
 ## Project structure:
-```
+```plaintext
 breakout/
 ├─ CMakeLists.txt
 ├─ README.md
 ├─ assets/
-│   ├─ textures/ (paddle.png, ball.png, bricks.png, powerups.png, backgrounds...)
 │   ├─ fonts/
-│   ├─ sounds/
-│   ├─ music/
-│   └─ levels/ (text files defining brick layouts)
+│   ├─ grid.txt (an exemple of a level layout)
+│   └─ levels1.txt, levels2.txt, etc. (level data files)
 ├─ include/
-│   ├─ Game.hpp
-│   ├─ State.hpp, MainMenuState.hpp, PlayState.hpp, PauseState.hpp, GameOverState.hpp
+│   ├─ Game.hpp (main game class)
+│   ├─ State.hpp, MainMenuState.hpp, PlayState.hpp, PauseState.hpp, GameOverState.hpp, WinState.hpp
 │   ├─ Entity.hpp, Paddle.hpp, Ball.hpp, Brick.hpp, PowerUp.hpp
 │   ├─ Physics.hpp
-│   ├─ AssetManager.hpp
 │   ├─ UI.hpp
-│   └─ Input.hpp
+│   ├─ Timer.hpp, TimerManager.hpp (for managing timed events)
+│   ├─ Starfield.hpp (for background effect)
 ├─ src/
 │   ├─ main.cpp
 │   ├─ Game.cpp
 │   ├─ State classes (MainMenuState.cpp, PlayState.cpp, etc.)
 │   ├─ Entity classes (Paddle.cpp, Ball.cpp, Brick.cpp, PowerUp.cpp)
 │   ├─ Physics.cpp
-│   ├─ AssetManager.cpp
 │   ├─ UI.cpp
-│   ├─ Input.cpp
-│   └─ Utils.hpp / Utils.cpp
-└─ tests/
-    └─ (optional) unit tests for collision functions using Catch2 or similar
+│   └─ Timer.cpp, TimerManager.cpp
+
 ```
 
-## Build Instructions
+## Build Instructions (Cross-Platform)
 1. Ensure you have CMake and a C++ compiler installed.
 2. Clone the repository:
    ```bash
@@ -95,20 +83,21 @@ breakout/
 ## Features
 - Classic Breakout/Arkanoid gameplay with paddle, ball, and bricks.
 - Power-ups that enhance gameplay (e.g., paddle size increase, ball speed change).
-- Sound effects and background music.
 - Simple and intuitive UI for navigating menus and displaying scores.
 - Responsive controls for paddle movement.
 - Collision detection between ball, paddle, bricks, and power-ups.
 - Game states for main menu, playing, paused, and game over.
-- Asset management for textures, sounds, and fonts.
+- Particle effects like ball trail, floating starfield particles and block destruction effects.
+- Timer system for managing timed events (e.g., power-up durations).
+- Background starfield effect for visual enhancement.
+- Multiple levels with increasing difficulty.
+- Restart and exit options.
+- Cross-platform compatibility (Windows, macOS, Linux to be tested).
 
 ## Inputs Controls
-- **Paddle Movement**: Use the left and right arrow keys to move the paddle. 
-`Note: The paddle movement is the only one to get the handling input in the update
-otherwise the game will not be responsive enough`
-- **Pause Game**: Press the `ESC` key to pause or resume the game.
-- **Restart Game**: Press the `R` key to restart the game from the main
-- **Exit Game**: Press the `Q` key to quit the game.
+- **Paddle Movement**: Use the left and right arrow keys or `A` and `D` to move the paddle. Press the `Space` to release the ball when is stuck on the paddle.
+- **Pause Game**: Press the `ESC` key to pause or resume the game. Here you can go to main menu or quit the game.
+- **Menu Navigation**: Use the arrow keys to navigate through menu options and `Enter` to select.
 
 ## Resources:
 - [SDL2](https://www.libsdl.org/) - Simple DirectMedia Layer for graphics, input, and audio.
