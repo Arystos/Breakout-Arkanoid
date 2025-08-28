@@ -24,6 +24,7 @@ public:
     // Reflect the ball based on the collision normal
     static void reflectBall(Entity_Ball& ball, const glm::vec2& normal);
 
+    // General collision detection between two entities
     static bool Collision(Entity *e1, Entity *e2);
 };
 

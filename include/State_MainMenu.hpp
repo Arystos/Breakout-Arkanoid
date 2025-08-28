@@ -22,14 +22,8 @@ private:
 
     // Text rendering
     TTF_Font* font = nullptr;
-    struct Label {
-        std::string text;
-        SDL_Texture* tex = nullptr;
-        SDL_Rect dst{0,0,0,0};
-        SDL_Rect container{0,0,0,0};
-    };
-    Label titleLbl{"Breakout"};
-    std::vector<Label> itemLbls;
+    UI::Label titleLbl{"Breakout"};
+    std::vector<UI::Label> itemLbls;
     
     // UI
     UI::Label title;

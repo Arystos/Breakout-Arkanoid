@@ -24,19 +24,11 @@ private:
     
     // Text rendering
     TTF_Font* font = nullptr;
-    struct Label {
-        std::string text;
-        SDL_Texture *tex = nullptr;
-        SDL_Rect dst{0, 0, 0, 0};
-        SDL_Rect container{0,0,0,0};
-    };
-    Label gameOverLabel{"Game Over"};
-    //Label scoreLabel{"Score: 0"};
-    Label instructionLabel{"Press Enter to return to Main Menu"};
+    UI::Label gameOverLabel{"Game Over"};
+    UI::Label instructionLabel{"Press Enter to return to Main Menu"};
     
     // UI
     UI::Label title;
-    //UI::Label scoreText;
     UI::Label instruction;
     
     // Cache colors

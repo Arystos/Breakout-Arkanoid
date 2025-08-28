@@ -12,9 +12,6 @@
 
 class State_Win : public State {
 public:
-    State_Win() = default;
-    ~State_Win() override = default;
-
     void onEnter(Game &game) override;
     void onExit(Game &game) override {};
     void handleInput(Game &game, const SDL_Event &event) override;
@@ -26,15 +23,9 @@ public:
 
 private:
     TTF_Font* font = nullptr;
-    struct Label {
-        std::string text;
-        SDL_Texture *tex = nullptr;
-        SDL_Rect dst{0, 0, 0, 0};
-        SDL_Rect container{0,0,0,0};
-    };
-    Label titleText{"You won"};
-    Label msgText{"I have no more levels, I guess you are really good"};
-    Label msg2Text{"Press Enter to go to Main Menu"};
+    UI::Label titleText{"You won"};
+    UI::Label msgText{"I have no more levels, I guess you are really good"};
+    UI::Label msg2Text{"Press Enter to go to Main Menu"};
     
     UI::Label title;
     UI::Label msg;

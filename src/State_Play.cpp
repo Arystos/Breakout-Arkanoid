@@ -17,10 +17,8 @@ Starfield::Params sp;
 Starfield starfield(sp);
 
 void State_Play::onEnter(Game &game) {
-    // init level, paddle, ball etc. later
-    std::cout << "Playing State" << std::endl;
-    
     State::onEnter(game);
+    std::cout << "Playing State" << std::endl;
 
     // init paddle
     paddle->active = true;
@@ -31,7 +29,6 @@ void State_Play::onEnter(Game &game) {
 
     // load level
     game.IncrementLevelIndex();
-    
     std::cout << "Loading level " << game.LevelIndex() << std::endl;
     if (game.LevelIndex() < (int)levels.size()) { // valid level index
         const auto &next = levels[game.LevelIndex()];
@@ -51,7 +48,6 @@ void State_Play::onEnter(Game &game) {
     // Old implementation: load a single level from a text file
     //bricks = loadLevel("assets/grid.txt", 50.0f, 50.0f);
     //std::cout << "Loaded " << bricks.size() << " bricks." << std::endl;
-    
     
     // init UI font
     font = Game::getInstance().uiFont();
@@ -84,21 +80,21 @@ void State_Play::onEnter(Game &game) {
     livesTitle.dst.x = 50;
     livesTitle.dst.y = 5;
 
+    // init starfield
     starfield.setViewportSize(game.PlayableWidth(), game.PlayableHeight());
 }
 
 void State_Play::handleInput(Game &game, const SDL_Event &event) {
     if (event.type == SDL_KEYDOWN)  {
         switch (event.key.keysym.scancode) {
-            case SDL_SCANCODE_ESCAPE:
-                // Pause the game
+            case SDL_SCANCODE_ESCAPE: // Pause the game
                 game.pushState(std::make_unique<State_Pause>());
                 break;
-            case SDL_SCANCODE_SPACE:
+            case SDL_SCANCODE_SPACE: // release only one ball
                 for (auto& ball : balls) {
                     if (ball->stuckToPaddle) {
                         ball->Release();
-                        break; // release only one ball
+                        break;
                     }
                 }
                 break;
@@ -109,9 +105,8 @@ void State_Play::handleInput(Game &game, const SDL_Event &event) {
 }
 
 void State_Play::update(Game &game, float dt) {
-    (void)game; (void)dt; // Avoid unused parameter warnings
     
-    // Update paddle, ball etc.
+    // --- Update entities ---
     if (paddle && paddle->active) paddle->update(dt);
     for (auto& ball : balls) {
         if (ball && ball->active) ball->update(dt);
@@ -119,34 +114,15 @@ void State_Play::update(Game &game, float dt) {
     for (auto& powerUp : powerUps) {
         if (powerUp && powerUp->active) powerUp->update(dt);
     }
-
-    // cleanup inactive entities
-    for (auto& ball : balls) {
-        if (ball && ball->toBeDestroyed) {
-            ball.reset();
-        }
-    }
-    // flush destroyed entities
-    balls.erase(std::remove_if(balls.begin(), balls.end(),
-                               [](auto& b){
-                                   return b == nullptr; }), balls.end());
-
     starfield.update(dt);
-                                   
-    if (paddle && paddle->toBeDestroyed) paddle.reset();
-    bricks.erase(std::remove_if(bricks.begin(), bricks.end(),
-                                [](auto& b){
-        return !b->active; }), bricks.end());
-    powerUps.erase(std::remove_if(powerUps.begin(), powerUps.end(),
-                                  [](auto& p){
-        return !p->active; }), powerUps.end());
 
+    // --- Check game conditions ---
+    // Game Over
     if (game.PlayerLives() <= 0) {
         game.changeState(std::make_unique<State_GameOver>());
         return;
     }
-
-    // Lost Condition
+    // Ball Lost
     if (game.getBallCount() <= 0) {
         // spawn a ball after a delay of 2 seconds
         static float respawnTimer = 0.0f;
@@ -156,13 +132,11 @@ void State_Play::update(Game &game, float dt) {
             // spawn a new ball
             spawnBall();
         }
-        
+
     }
-    
-    // Win Condition
-    // if the bricks are empty or there are only indestructible bricks left
+    // Win Condition: no bricks or only indestructible bricks left
     if (bricks.empty() ||
-        std::all_of(bricks.begin(), bricks.end(), [](const auto& b){ 
+        std::all_of(bricks.begin(), bricks.end(), [](const auto& b){
             return b->type == BrickType::Indestructible; })) {
         // stop all balls
         for (auto& ball : balls) {
@@ -180,30 +154,49 @@ void State_Play::update(Game &game, float dt) {
                     game.changeState(std::make_unique<State_Play>());
                 }
         ); (void)t;
-        
+
         bricks.clear(); // clear any remaining indestructible bricks for next level
     }
+
+    // --- Clean up destroyed entities ---
+    // balls
+    for (auto& ball : balls) {
+        if (ball && ball->toBeDestroyed) {
+            ball.reset();
+        }
+    }
+    balls.erase(std::remove_if(balls.begin(), balls.end(),
+                               [](auto& b){
+                                   return b == nullptr; }), balls.end());
+    // paddle
+    if (paddle && paddle->toBeDestroyed) paddle.reset();
+    bricks.erase(std::remove_if(bricks.begin(), bricks.end(),
+                                [](auto& b){
+        return !b->active; }), bricks.end());
+    // power-ups
+    powerUps.erase(std::remove_if(powerUps.begin(), powerUps.end(),
+                                  [](auto& p){
+        return !p->active; }), powerUps.end());
 }
 
 void State_Play::render(Game &game) {
     SDL_Renderer* renderer = game.getRenderer();
     
-    // TODO: placeholder: draw a playfield box and title
+    // Playable area box
     SDL_Rect box{40, 40, game.PlayableWidth(), game.PlayableHeight() };
     SDL_SetRenderDrawColor(renderer, 60, 60, 60, 255);
     SDL_RenderDrawRect(renderer, &box);
-
+    // starfield background
     starfield.render(renderer);
 
-    // win screen
+    // Win title (skip rendering other entities)
     if (winTitle.visible) {
         UI::DrawLabel(renderer, winTitle);
         UI::DrawLabel(renderer, messageTitle);
         return; // skip rendering other entities
     }
     
-    // Draw UI elements
-
+    // --- Render UI ---
     // Power-up title
     if (powerUpLabel.visible) {
         UI::SetLabelText(renderer, powerUpTitle, powerUpLabel.text, titleColor);
@@ -211,28 +204,22 @@ void State_Play::render(Game &game) {
         powerUpTitle.dst.y = game.Height() / 1.6f;
         UI::DrawLabel(renderer, powerUpTitle);
     }
-
+    // Power-up info
     if (powerUpLabelInfo.visible) {
         UI::SetLabelText(renderer, powerUpInfoTitle, powerUpLabelInfo.text, textColor);
         powerUpInfoTitle.dst.x = (game.Width() - powerUpInfoTitle.dst.w) / 2;
         powerUpInfoTitle.dst.y = game.Height() / 1.6f + 40; // below power-up title
         UI::DrawLabel(renderer, powerUpInfoTitle);
     }
-
-    if (livesTitle.visible && game.PlayerLives() > 0) {
-        UI::SetLabelText(renderer, livesTitle, "Lives: " + std::to_string(game.PlayerLives()), livesColor);
-        livesTitle.dst.x = 50;
-        livesTitle.dst.y = 5;
-        UI::DrawLabel(renderer, livesTitle);
-    }
-    
+    // Lives
     if (game.PlayerLives() > 0) {
         UI::SetLabelText(renderer, livesTitle, "Lives: " + std::to_string(game.PlayerLives()), livesColor);
         livesTitle.dst.x = 50;
         livesTitle.dst.y = 5;
         UI::DrawLabel(renderer, livesTitle);
     }
-
+    
+    // --- Render entities ---
     // power-ups
     for (auto& powerUp : powerUps) {
         if (powerUp->active) powerUp->render(renderer);
@@ -279,12 +266,13 @@ bool State_Play::destroyEntity(Entity *e) {
         if (e == it->get()) { bricks.erase(it); return true; }
     }
     SDL_Log("State_Play::destroyEntity: Entity not found.");
+    
     return false;
 }
 
 std::vector<std::unique_ptr<Entity_Brick>>
 State_Play::loadLevel(const std::string &file, float offsetX, float offsetY) {
-    // TODO check colors
+    // Open the level file
     std::vector<std::unique_ptr<Entity_Brick>> bricks;
     std::ifstream in(file);
     if (!in) {
@@ -364,6 +352,7 @@ std::unique_ptr<Entity_Ball>
     
     ball->active = true;
 
+    // add to balls vector
     balls.push_back(std::move(ball));
     Game::getInstance().setBallCount(static_cast<int>(balls.size()));
     return ball;

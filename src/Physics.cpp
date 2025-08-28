@@ -49,8 +49,6 @@ bool Physics::Collision(Entity *e1, Entity *e2) {
     
     // use the aabb vs aabb collision detection
     if (aabbVsAABB(e1->getRect(), e2->getRect())) {
-        // print to console the collision
-        std::cout << "Collision detected between entities!" << std::endl;
         return true;
     }
     
