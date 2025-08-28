@@ -6,6 +6,7 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <iostream>
+#include <random>
 #include "State.hpp"
 #include "UI.hpp"
 #include "Timer.hpp"
@@ -24,6 +25,9 @@ public:
 
     // TimerManager
     TimerManager timerManager;
+
+    // Random number generator
+    static inline std::mt19937 rng{std::random_device{}()};
     
     // --- Initialization, Main Loop, and Cleanup ---
     bool init(const char* title, bool fullscreen);

@@ -54,20 +54,3 @@ bool Physics::Collision(Entity *e1, Entity *e2) {
     
     return false;
 }
-
-void Physics::reflectBall(Entity_Ball &ball, const glm::vec2 &normal) {
-    // simple reflection: r = v − 2 (v · n) n
-    float dot = ball.velocity.x * normal.x + ball.velocity.y * normal.y;
-    ball.velocity.x -= 2 * dot * normal.x;
-    ball.velocity.y -= 2 * dot * normal.y;
-
-    // ensure ball moves away from the surface
-    glm::vec2 newPos = glm::vec2(ball.position.x, ball.position.y);
-    if (normal.x != 0) {
-        newPos.x = ball.position.x + (normal.x > 0 ? 1 : -1) * ball.Radius();
-    }
-    if (normal.y != 0) {
-        newPos.y = ball.position.y + (normal.y > 0 ? 1 : -1) * ball.Radius();
-    }
-    ball.position = newPos;
-}

@@ -13,7 +13,6 @@ Entity_Brick::Entity_Brick() {
     size = {60.0f, 20.0f};
     health = 1;
     active = true;
-    particleInfo.rng_.seed(std::random_device{}());
 
     // TODO: Load textures
     /*
@@ -120,34 +119,34 @@ void Entity_Brick::spawnParticles() {
         BrickParticle p{};
 
         // POS: uniforme nel disco (evita pattern a griglia)
-        float u = u01(c.rng_), v = u01(c.rng_);
+        float u = u01(Game::rng), v = u01(Game::rng);
         float r = std::sqrt(u);                  // uniforme su area
         float th = 6.2831853f * v;               // 2π
         p.pos.x = cx + r * std::cos(th) * rx;
         p.pos.y = cy + r * std::sin(th) * ry;
 
         // VEL: modulo casuale e direzione casuale
-        float s = spd(c.rng_);
-        float a = 6.2831853f * u01(c.rng_);
+        float s = spd(Game::rng);
+        float a = 6.2831853f * u01(Game::rng);
         p.vel = { std::cos(a) * s, std::sin(a) * s };
 
         // LIFE / SIZE / ALPHA con varianza per-particella
         p.age = 0.f;
-        p.lifetime = life(c.rng_);
-        p.size0 = c.pSize0_ * (0.8f + 0.6f * u01(c.rng_));
-        p.size1 = c.pSize1_ * (0.8f + 0.6f * u01(c.rng_));
-        p.a0 = static_cast<Uint8>(jitterA0(c.rng_));
+        p.lifetime = life(Game::rng);
+        p.size0 = c.pSize0_ * (0.8f + 0.6f * u01(Game::rng));
+        p.size1 = c.pSize1_ * (0.8f + 0.6f * u01(Game::rng));
+        p.a0 = static_cast<Uint8>(jitterA0(Game::rng));
         p.a1 = 0;
 
         // Colore con micro-jitter
         auto jit = [&](Uint8 base){
-            int j = int(base) + colJit(c.rng_);
+            int j = int(base) + colJit(Game::rng);
             return (Uint8)std::clamp(j, 0, 255);
         };
         p.col = { jit(color.r), jit(color.g), jit(color.b), 255 };
 
         // opzionale: moltiplicatore di gravità per varianza in update
-        p.gravityMul = gravMul(c.rng_); // assicurati che BrickParticle abbia questo campo
+        p.gravityMul = gravMul(Game::rng); // assicurati che BrickParticle abbia questo campo
 
         c.particles_.push_back(p);
     }

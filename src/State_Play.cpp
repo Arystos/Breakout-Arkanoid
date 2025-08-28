@@ -155,7 +155,7 @@ void State_Play::update(Game &game, float dt) {
                 }
         ); (void)t;
 
-        bricks.clear(); // clear any remaining indestructible bricks for next level
+        bricks.clear(); // clear any Remaining indestructible bricks for next level
     }
 
     // --- Clean up destroyed entities ---
@@ -232,7 +232,7 @@ void State_Play::render(Game &game) {
     for (auto& ball : balls) {
         if (ball && ball->active) ball->render(renderer);
     }
-    // paddle
+    // paddle 
     if (paddle && paddle->active) paddle->render(renderer);
     
 }
@@ -345,13 +345,12 @@ std::unique_ptr<Entity_Ball>
     // detach from paddle and set initial velocity
     ball->stuckToPaddle = false;
     // random initial direction (left or right)
-    static std::mt19937 rng{std::random_device{}()}; //generate random seed
     std::uniform_int_distribution<int> dist(0, 1);
-    int dir = dist(rng) == 0 ? -1 : 1;
+    int dir = dist(Game::rng) == 0 ? -1 : 1;
     ball->velocity = {dir * 300.0f, -300.0f};
     
     ball->active = true;
-
+    
     // add to balls vector
     balls.push_back(std::move(ball));
     Game::getInstance().setBallCount(static_cast<int>(balls.size()));

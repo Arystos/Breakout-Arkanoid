@@ -21,9 +21,6 @@ public:
     // Check collision between two AABBs
     static bool aabbVsAABB(const SDL_FRect& a, const SDL_FRect& b);
 
-    // Reflect the ball based on the collision normal
-    static void reflectBall(Entity_Ball& ball, const glm::vec2& normal);
-
     // General collision detection between two entities
     static bool Collision(Entity *e1, Entity *e2);
 };

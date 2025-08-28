@@ -14,12 +14,12 @@ public:
     // Callbacks
     using StartCallback = std::function<void(uint64_t)>;
     using EndCallback = std::function<void(uint64_t)>;
-    using TickCallback = std::function<void(float /*elapsed*/, float /*remaining*/)>;
+    using TickCallback = std::function<void(float /*Elapsed*/, float /*Remaining*/)>;
     using StopCallback = std::function<void()>;
     
     Timer() = default;
 
-    // Avvia il timer. duration in secondi. repeat = true per ripetere.
+    // Start il timer. duration in seconds. repeat = true (repeat indefinitely)
     void start(uint64_t id, float durationSeconds, bool repeat = false);
     void stop(); // stop without onEnd callback
     void end(); // stop with onEnd callback
@@ -27,30 +27,30 @@ public:
     void resume();
     void update(float dt);
 
-    bool isRunning() const { return running_; }
-    bool isPaused()  const { return paused_; }
-    float elapsed()  const { return elapsed_; }
-    float remaining()const { return (duration_ - elapsed_) > 0.f ? (duration_ - elapsed_) : 0.f; }
+    bool isRunning() const { return running; }
+    bool isPaused()  const { return paused; }
+    float Elapsed()  const { return elapsed; }
+    float Remaining()const { return (duration - elapsed) > 0.f ? (duration - elapsed) : 0.f; }
 
     // metadata
-    std::any payload;        // dati custom (es. pointer, string, struct)
-    std::string tag;        // etichetta leggibile
+    std::any payload; // custom data 
+    std::string tag; // optional tag for grouping timers
 
     // Callbacks
-    StartCallback onStart; // chiamato quando il timer parte
-    EndCallback   onEnd;   // chiamato quando il timer finisce
-    TickCallback  onTick;  // chiamato ogni update con elapsed e remaining
-    StopCallback  onStop;  // chiamato quando il timer viene fermato
+    StartCallback onStart;
+    EndCallback   onEnd;
+    TickCallback  onTick;
+    StopCallback  onStop;
     
-    uint64_t getId() const { return id_; }
+    uint64_t getId() const { return id; }
 
 private:
-    uint64_t id_{0};
-    float duration_{0.0f};
-    float elapsed_{0.0f};
-    bool running_{false};
-    bool paused_{false};
-    bool repeat_{false};
+    uint64_t id{0};
+    float duration{0.0f};
+    float elapsed{0.0f};
+    bool running{false};
+    bool paused{false};
+    bool repeat{false};
 };
 
 

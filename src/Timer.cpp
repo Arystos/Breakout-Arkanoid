@@ -5,50 +5,50 @@
 #include "Timer.hpp"
 
 void Timer::start(uint64_t id, float durationSeconds, bool repeat) {
-    id_ = id;
-    duration_ = durationSeconds;
-    elapsed_ = 0.f;
-    running_ = durationSeconds > 0.f;
-    paused_ = false;
-    repeat_ = repeat;
-    if (!running_) {
+    id = id;
+    duration = durationSeconds;
+    elapsed = 0.f;
+    running = durationSeconds > 0.f;
+    paused = false;
+    repeat = repeat;
+    if (!running) {
         // trigger immediato
-        if (onEnd) onEnd(id_);
+        if (onEnd) onEnd(id);
     }
 }
 
 void Timer::stop() {
-    running_ = false;
-    paused_ = false;
-    elapsed_ = 0.f;
+    running = false;
+    paused = false;
+    elapsed = 0.f;
     onEnd = nullptr;
 }
 
 void Timer::end() {
-    running_ = false;
-    paused_ = false;
-    elapsed_ = duration_;
-    if (onEnd) onEnd(id_);
+    running = false;
+    paused = false;
+    elapsed = duration;
+    if (onEnd) onEnd(id);
     onEnd = nullptr;
 }
 
 void Timer::pause() {
-    if (running_) paused_ = true;
+    if (running) paused = true;
 }
 
 void Timer::resume() {
-    if (running_) paused_ = false;
+    if (running) paused = false;
 }
 
 void Timer::update(float dt) {
-    if (!running_ || paused_) return;
-    elapsed_ += dt;
-    if (elapsed_ >= duration_) {
-        if (onEnd) onEnd(id_);
-        if (repeat_) {
-            elapsed_ = std::fmod(elapsed_, duration_);
+    if (!running || paused) return;
+    elapsed += dt;
+    if (elapsed >= duration) {
+        if (onEnd) onEnd(id);
+        if (repeat) {
+            elapsed = std::fmod(elapsed, duration);
         } else {
-            running_ = false;
+            running = false;
             onEnd = nullptr; // prevent multiple calls
         }
     }

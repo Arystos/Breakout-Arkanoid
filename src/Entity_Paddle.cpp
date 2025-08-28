@@ -24,23 +24,6 @@ Entity_Paddle::Entity_Paddle() {
     active = true;
 }
 
-
-/*
-void Entity::render(SDL_Renderer *r) {
-    // Print debug information
-    SDL_Log("Rendering Paddle");
-    if (texture) {
-        SDL_Rect rect{(int)position.x, (int)position.y, (int)size.x, (int)size.y};
-        SDL_RenderCopy(r, texture, nullptr, &rect);
-    } else {
-        // Fallback rendering if no texture is set
-        SDL_SetRenderDrawColor(r, 255, 255, 255, 255); // White color
-        SDL_Rect rect{(int)position.x, (int)position.y, (int)size.x, (int)size.y};
-        SDL_RenderFillRect(r, &rect);
-    }
-}
- */
-
 void Entity_Paddle::render(SDL_Renderer *r) {
     if (texture == nullptr) {
         // Create a rectangle for the paddle
@@ -239,16 +222,14 @@ void Entity_Paddle::onPaddleShrinkTimerEnd(uint64_t id) {
 
 void Entity_Paddle::onBallSlowTimerEnd(uint64_t id, std::unique_ptr<struct Entity_Ball> *ball) {
     (void)id;
-    //ball->get()->setMaxSpeed(ball->get()->MaxSpeed() * ballSpeedModifier); // restore speed
-    //ball->get()->velocity *= ballSpeedModifier;
+    // speed up ball back to normal speed
     Game::getInstance().setBallSpeedModifier(
             Game::getInstance().BallSpeedModifier() * ballSpeedModifier);
 }
 
 void Entity_Paddle::onBallFastTimerEnd(uint64_t id, std::unique_ptr<Entity_Ball> *ball) {
     (void)id;
-    //ball->get()->setMaxSpeed(ball->get()->MaxSpeed() / ballSpeedModifier); // restore speed
-    //ball->get()->velocity /= ballSpeedModifier;
+    // slow down ball back to normal speed
     Game::getInstance().setBallSpeedModifier(
             Game::getInstance().BallSpeedModifier() / ballSpeedModifier);
 }

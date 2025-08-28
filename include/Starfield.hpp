@@ -30,7 +30,6 @@ public:
 
     void init(const Params& p) {
         params = p;
-        rng.seed(params.seed);
         dist01 = std::uniform_real_distribution<float>(0.f, 1.f);
         halfW = params.width * 0.5f;
         halfH = params.height * 0.5f;
@@ -41,19 +40,19 @@ public:
             int layer = i % std::max(1, params.layers); // distribuzione uniforme
             float depth = 1.f + layer;                  // 1..layers
             float speed = params.baseSpeed * depth;     // più “vicino” = più veloce
-            Uint8 b = (Uint8)std::clamp(140 + 30 * layer + (int)(dist01(rng) * 30), 0, 255);
+            Uint8 b = (Uint8)std::clamp(140 + 30 * layer + (int)(dist01(Game::rng) * 30), 0, 255);
 
             Star s;
             // POSIZIONE IN SPAZIO LOCALE CENTRATO: x∈[-halfW, halfW), y∈[-halfH, halfH)
-            s.x = lerp(-halfW, halfW, dist01(rng));
-            s.y = lerp(-halfH, halfH, dist01(rng));
+            s.x = lerp(-halfW, halfW, dist01(Game::rng));
+            s.y = lerp(-halfH, halfH, dist01(Game::rng));
             // direzione iniziale quasi verticale, con piccola variazione
-            float ang = -M_PI_2 + (dist01(rng) - 0.5f) * 0.6f;
+            float ang = -M_PI_2 + (dist01(Game::rng) - 0.5f) * 0.6f;
             s.vx = std::cos(ang) * speed * 0.2f; // parallax: orizzontale leggero
             s.vy = std::sin(ang) * speed;
             s.maxSpeed = speed;
             s.brightness = b;
-            s.size = 1 + (layer > 0 ? 1 : 0) + (layer > 1 ? (dist01(rng) < 0.25f) : 0); // 1..3
+            s.size = 1 + (layer > 0 ? 1 : 0) + (layer > 1 ? (dist01(Game::rng) < 0.25f) : 0); // 1..3
             s.layer = layer;
             s.jitterTimer = 0.f;
             stars.push_back(s);
@@ -107,8 +106,8 @@ public:
             s.jitterTimer += dt;
             if (s.jitterTimer > 0.02f) {
                 s.jitterTimer = 0.f;
-                float jx = (dist01(rng) - 0.5f) * jitter;
-                float jy = (dist01(rng) - 0.5f) * jitter * 1.6f;
+                float jx = (dist01(Game::rng) - 0.5f) * jitter;
+                float jy = (dist01(Game::rng) - 0.5f) * jitter * 1.6f;
                 s.vx += jx;
                 s.vy += jy;
 
@@ -118,7 +117,7 @@ public:
                     s.vx *= k; s.vy *= k;
                 }
                 if (sp < 0.25f * s.maxSpeed) {
-                    float ang = -M_PI_2 + (dist01(rng) - 0.5f) * 0.3f;
+                    float ang = -M_PI_2 + (dist01(Game::rng) - 0.5f) * 0.3f;
                     s.vx += std::cos(ang) * 0.35f * s.maxSpeed;
                     s.vy += std::sin(ang) * 0.35f * s.maxSpeed;
                 }
@@ -137,7 +136,7 @@ public:
                 if (s.y >=  halfH) s.y -= h2;
             } else {
                 if (s.x < -halfW || s.x >= halfW || s.y < -halfH || s.y >= halfH) {
-                    s.x = lerp(-halfW, halfW, dist01(rng));
+                    s.x = lerp(-halfW, halfW, dist01(Game::rng));
                     s.y = -halfH; // rientra dall’alto locale
                 }
             }
@@ -177,7 +176,6 @@ private:
 
     Params params;
     std::vector<Star> stars;
-    std::mt19937 rng{1337};
     std::uniform_real_distribution<float> dist01{0.f, 1.f};
 
     float halfW = 320.f;

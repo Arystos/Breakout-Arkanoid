@@ -156,10 +156,9 @@ void Entity_Ball::onCollision(Entity &entity) {
     if (auto* brick_ = dynamic_cast<Entity_Brick*>(&entity)) {
         // reflection
         velocity = glm::reflect(velocity, normal);
-        position += normal * (radius * 0.5f);
+        position += normal * (radius * 0.5f); //normal push to avoid sticking
         // Clamp the bouce angle to avoid too horizontal or vertical trajectories
         float angle = glm::atan(velocity.y, velocity.x);
-        // between -60 and +60 degrees
         const float minAngle = glm::radians(20.0f);
         const float maxAngle = glm::radians(160.0f);
         if (std::abs(angle) < minAngle) {
@@ -200,13 +199,9 @@ void Entity_Ball::Release() {
 // destructor 
 Entity_Ball::~Entity_Ball() {
     active = false;
-    /*
-    if (texture) {
-        SDL_DestroyTexture(texture.release());
-        texture = nullptr;
-    }
-     */
 }
+
+// --- Trail
 
 void Entity_Ball::updateTrail(float dt) {
     if (!trail.enabled) return;
