@@ -57,7 +57,6 @@ void State_MainMenu::handleInput(Game& game, const SDL_Event& event) {
                 break;
             case SDL_SCANCODE_RETURN:
             case SDL_SCANCODE_SPACE:
-                // TODO: test if this works
                 if (selected == 0) {
                     game.changeState(std::make_unique<State_Play>());
                 } else game.quit();

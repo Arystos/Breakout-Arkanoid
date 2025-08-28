@@ -45,7 +45,7 @@ void State_Play::onEnter(Game &game) {
         return;
     }
     
-    // Old implementation: load a single level from a text file
+    // For testing: load a simple grid of bricks
     //bricks = loadLevel("assets/grid.txt", 50.0f, 50.0f);
     //std::cout << "Loaded " << bricks.size() << " bricks." << std::endl;
     

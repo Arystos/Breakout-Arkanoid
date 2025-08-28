@@ -17,7 +17,6 @@ void State_Pause::handleInput(Game &game, const SDL_Event &event) {
                 break;
             case SDL_SCANCODE_RETURN:
             case SDL_SCANCODE_SPACE:
-                // TODO: test if this works
                 if (selected == 0) {
                     game.popState(); // Resume game by popping the pause state
                 } else {

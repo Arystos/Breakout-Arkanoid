@@ -240,7 +240,6 @@ namespace UI {
             }
             if (box.expandWidth && box.rect.w > 0) {
                 b->rect.w = box.rect.w - box.padding * 2;
-                // TODO: Test-> Uniform width and recalculate caption position
                 if (box.equalWidth) {
                     int maxW = 0;
                     for (auto *bi: box.items) { if (bi && bi->rect.w > maxW) maxW = bi->rect.w; }

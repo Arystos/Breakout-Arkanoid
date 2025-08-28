@@ -128,7 +128,7 @@ void Entity_Paddle::onCollision(Entity &other) {
                 break;
             }
             case EffectType::SlowBall: {
-                // TODO: slow down ball speed
+                // Slow down ball speed
                 if (auto *playState = dynamic_cast<State_Play *>(
                         Game::getInstance().getCurrentState()))
                     for (auto &ball: playState->getBalls()) {
@@ -146,7 +146,7 @@ void Entity_Paddle::onCollision(Entity &other) {
                 break;
             }
             case EffectType::FastBall: {
-                // TODO: speed up ball speed
+                // Speed up ball speed
                 if (auto *playState = dynamic_cast<State_Play *>(
                         Game::getInstance().getCurrentState()))
                     for (auto &ball: playState->getBalls()) {

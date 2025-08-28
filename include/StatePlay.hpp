@@ -47,13 +47,10 @@ public:
 private:
     bool paused = false; // Flag to check if the game is paused
     int score = 0; // Player's score
-    // Player's lives
     float deltaTime = 0.0f; // Time since last update, used for movement calculations
-    //glm::vec2 normal{}; // collision normal
-    // TODO: Add paddle, ball, bricks
 
+    // Entities
     std::unique_ptr<Entity_Paddle> paddle = std::make_unique<Entity_Paddle>();
-    //std::unique_ptr<Entity_Ball> ball = std::make_unique<Entity_Ball>();
     std::vector<std::unique_ptr<Entity_Ball>> balls = {};
     std::vector<std::unique_ptr<Entity_Brick>> bricks = {};
     std::vector<std::unique_ptr<Entity_PowerUp>> powerUps = {};
