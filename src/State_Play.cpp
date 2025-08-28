@@ -71,10 +71,10 @@ void State_Play::onEnter(Game &game) {
     powerUpInfoTitle.dst.x = (game.Width() - powerUpInfoTitle.dst.w) / 2; // center horizontally
     powerUpInfoTitle.dst.y = game.Height() / 1.6f + 20;
     // message title
-    UI::BuildLabel(renderer, messageTitle, messageLabel.text, font, textColor, UI::AlignH::Left);
+    UI::BuildLabel(renderer, messageTitle, messageLabel.text, font, textColor, UI::AlignH::Center);
     messageTitle.scale = 0.7f;
-    messageTitle.dst.x = (game.Width() - powerUpTitle.dst.w) / 2; // center horizontally
-    messageTitle.dst.y = game.Height() / 1.6f;
+    messageTitle.dst.x = (game.Width() - messageTitle.dst.w) / 2; // center horizontally
+    messageTitle.dst.y = game.Height() / 2 + 40;
     // lives title
     UI::BuildLabel(renderer, livesTitle, livesLabel.text, font, livesColor, UI::AlignH::Left);
     livesTitle.dst.x = 50;

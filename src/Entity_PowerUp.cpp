@@ -4,6 +4,7 @@
 
 #include "Entity_PowerUp.hpp"
 #include "Entity_Paddle.hpp"
+#include "EffectType.hpp"
 #include "Physics.hpp"
 #include <random>
 
@@ -67,15 +68,5 @@ void Entity_PowerUp::onCollision(Entity &other) {
 }
 
 const std::string &Entity_PowerUp::typeToString() const {
-    // TODO: improve with map or array
-    static const std::string typeNames[] = {
-            "Expand Paddle",
-            "Shrink Paddle",
-            "Multi Ball",
-            "Slow Ball",
-            "Fast Ball",
-            "Sticky Paddle",
-            "Unknown"
-    };
     return typeNames[static_cast<int>(type)];
 }

@@ -27,6 +27,8 @@ public:
     std::optional<std::any> getPayload(uint64_t id) const;
     std::vector<Timer> Timers () const { return timers_; }
 
+    void pauseByTag(const char *string, std::any payload);
+    void resumeByTag(const char *string, std::any payload);
     void stopByTag(const char *string, std::any payload);
     void endByTag(const char *string, std::any payload); // with onEnd callback
 

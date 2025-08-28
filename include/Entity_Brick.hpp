@@ -28,13 +28,6 @@ public:
     
     void setColor();
 private:
-    SDL_Texture* textureForType(BrickType t);
-    
-    SDL_Texture* normalTexture{nullptr};
-    SDL_Texture* strongTexture{nullptr};
-    SDL_Texture* indestructibleTexture{nullptr};
-    SDL_Texture* mysteryTexture{nullptr};
-
 
     struct BrickParticle {
         glm::vec2 pos;

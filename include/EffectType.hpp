@@ -15,4 +15,14 @@ enum class EffectType {
     Count
 };
 
+static const std::string typeNames[] = {
+        "Expand Paddle",
+        "Shrink Paddle",
+        "Multi Ball",
+        "Slow Ball",
+        "Fast Ball",
+        "Sticky Paddle",
+        "Unknown"
+};
+
 #endif //BREAKOUT_EFFECTTYPE_HPP

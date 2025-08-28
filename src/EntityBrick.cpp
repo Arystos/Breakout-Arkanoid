@@ -13,15 +13,6 @@ Entity_Brick::Entity_Brick() {
     size = {60.0f, 20.0f};
     health = 1;
     active = true;
-
-    // TODO: Load textures
-    /*
-    Game& game = Game::getInstance();
-    normalTexture = game.loadTexture("assets/brick_normal.png");
-    strongTexture = game.loadTexture("assets/brick_strong.png");
-    indestructibleTexture = game.loadTexture("assets/brick_indestructible.png");
-    mysteryTexture = game.loadTexture("assets/brick_mystery.png");
-    */
 }
 
 void Entity_Brick::update(float dt) {
@@ -42,16 +33,6 @@ void Entity_Brick::render(SDL_Renderer *r) {
     SDL_RenderFillRect(r, &rect);
 
     if (particleInfo.particlesActive_) { renderParticles(r); }
-}
-
-SDL_Texture *Entity_Brick::textureForType(BrickType t) {
-    switch (t) {
-        case BrickType::Normal: return normalTexture;
-        case BrickType::Strong: return strongTexture;
-        case BrickType::Indestructible: return indestructibleTexture;
-        case BrickType::Mystery: return mysteryTexture;
-        default: return nullptr; // should never happen
-    }
 }
 
 void Entity_Brick::onCollision(Entity &other) {

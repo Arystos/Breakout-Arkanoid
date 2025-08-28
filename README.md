@@ -104,4 +104,3 @@ breakout/
 - [SDL2 Unofficial Doc](https://thenumb.at/cpp-course/index.html#sdl) - SDL2 documentation that I followed
 - [CMake](https://cmake.org/) - Cross-platform build system.
 - [Starfield](https://web.archive.org/web/20160114180422/http://freespace.virgin.net/hugo.elias/graphics/x_stars.htm) - Background starfield effect.
-- 

@@ -47,6 +47,26 @@ Timer* TimerManager::findTimer(uint64_t id) {
     return nullptr;
 }
 
+void TimerManager::pauseByTag(const char *string, std::any payload) {
+    for (auto &t : timers_) {
+        if (t.tag == string && t.payload.type() == typeid(std::string)) {
+            if (std::any_cast<std::string>(t.payload) == std::any_cast<std::string>(payload)) {
+                t.pause();
+            }
+        }
+    }
+}
+
+void TimerManager::resumeByTag(const char *string, std::any payload) {
+    for (auto &t : timers_) {
+        if (t.tag == string && t.payload.type() == typeid(std::string)) {
+            if (std::any_cast<std::string>(t.payload) == std::any_cast<std::string>(payload)) {
+                t.resume();
+            }
+        }
+    }
+}
+
 void TimerManager::stopByTag(const char *string, std::any payload) {
     for (auto &t : timers_) {
         if (t.tag == string && t.payload.type() == typeid(std::string)) {
