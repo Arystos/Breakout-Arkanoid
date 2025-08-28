@@ -3,8 +3,30 @@ An arcade game in C++
 
 # Installation
 
-On windows you can use vcpkg to install the dependencies:
-Double click on the `install_dependencies.bat` file to install the dependencies.
+On windows
+Double click on the `setup_deps.bat` file to install the dependencies.
+
+Do not close the process until it finish.
+
+The download is finished when you see:
+CMake generation failed. Debug
+
+Click on Debug
+
+After regenerate the cmake 
+``` 
+All requested installations completed successfully in: 1.3 s
+```
+
+If you close it earlier simply delete the directory named vcpkg and run again the script.
+
+Once downloaded put the following code in the terminal to build the project:
+```bash
+cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT\scripts\buildsystems\vcpkg.cmake"
+```
+
+Or you can simply click on the Info in the solution explorer
+Cmake generation not 
 
 After run this command int the terminal
 ```bash

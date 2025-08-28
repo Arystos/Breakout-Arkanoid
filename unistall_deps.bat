@@ -6,21 +6,21 @@ set VCPKG_ROOT=%~dp0\vcpkg
 
 REM Verifica che vcpkg esista
 if not exist "%VCPKG_ROOT%\vcpkg.exe" (
-    echo ERROR: vcpkg not found: "%VCPKG_ROOT%"
+    echo ERRORE: vcpkg non trovato in "%VCPKG_ROOT%"
     pause
     exit /b 1
 )
 
 REM Disinstallazione pacchetti (SDL2, SDL2_ttf, glm)
-echo Removing packages: SDL2, SDL2_ttf, glm
+echo Rimozione pacchetti installati...
 "%VCPKG_ROOT%\vcpkg.exe" remove sdl2 sdl2-ttf glm --triplet x64-windows
 
-REM NOTA: vcpkg rimane installato, vengono rimossi solo i pacchetti
+REM Rimozione di vcpkg stesso
+echo Eliminazione cartella vcpkg...
+rmdir /s /q "%VCPKG_ROOT%"
 
 echo.
-echo Packages unistalled succesfully, vcpkg is still avaiable per future use.
-echo Want to remove other unused packages? Run:
-echo   "%VCPKG_ROOT%\vcpkg.exe" remove --outdated --recurse
+echo Tutti i pacchetti e vcpkg sono stati rimossi.
 echo.
 
 pause
