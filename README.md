@@ -27,34 +27,6 @@ sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf
 ```
 Note: Linux has not been texted yet, if you encounter any issue please open an issue.
 
-## Project structure:
-```plaintext
-breakout/
-├─ CMakeLists.txt
-├─ README.md
-├─ assets/
-│   ├─ fonts/
-│   ├─ grid.txt (an exemple of a level layout)
-│   └─ levels1.txt, levels2.txt, etc. (level data files)
-├─ include/
-│   ├─ Game.hpp (main game class)
-│   ├─ State.hpp, MainMenuState.hpp, PlayState.hpp, PauseState.hpp, GameOverState.hpp, WinState.hpp
-│   ├─ Entity.hpp, Paddle.hpp, Ball.hpp, Brick.hpp, PowerUp.hpp
-│   ├─ Physics.hpp
-│   ├─ UI.hpp
-│   ├─ Timer.hpp, TimerManager.hpp (for managing timed events)
-│   ├─ Starfield.hpp (for background effect)
-├─ src/
-│   ├─ main.cpp
-│   ├─ Game.cpp
-│   ├─ State classes (MainMenuState.cpp, PlayState.cpp, etc.)
-│   ├─ Entity classes (Paddle.cpp, Ball.cpp, Brick.cpp, PowerUp.cpp)
-│   ├─ Physics.cpp
-│   ├─ UI.cpp
-│   └─ Timer.cpp, TimerManager.cpp
-
-```
-
 ## Build Instructions (Cross-Platform)
 1. Ensure you have CMake and a C++ compiler installed.
 2. Clone the repository:
