@@ -87,3 +87,10 @@ otherwise the game will not be responsive enough`
 - **Pause Game**: Press the `ESC` key to pause or resume the game.
 - **Restart Game**: Press the `R` key to restart the game from the main
 - **Exit Game**: Press the `Q` key to quit the game.
+
+## Resources:
+- [SDL2](https://www.libsdl.org/) - Simple DirectMedia Layer for graphics, input, and audio.
+- [SDL2 Unofficial Doc](https://thenumb.at/cpp-course/index.html#sdl) - SDL2 documentation that I followed
+- [CMake](https://cmake.org/) - Cross-platform build system.
+- [Starfield](https://web.archive.org/web/20160114180422/http://freespace.virgin.net/hugo.elias/graphics/x_stars.htm) - Background starfield effect.
+- 
